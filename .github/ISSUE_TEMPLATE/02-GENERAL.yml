@@ -1,7 +1,7 @@
 # ===== ci(templates/feature-request) ======
 # Credit @JeremyFriesenGitHub
-name: ✨ Feature Request
-description: Request a new feature.
+name: 🫡 General Ticket
+description: A general request.
 title: 'feat(scope): description'
 labels:
   - enhancement
