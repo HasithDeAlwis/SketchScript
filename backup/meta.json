@@ -1,0 +1,15 @@
+{
+  "root": true,
+  "pages": [
+    "--- Welcome ---",
+    "index",
+    "quick-start",
+    "roadmap",
+    "--- Reference ---",
+    "...reference",
+    "--- Learning ---",
+    "...learning",
+    "--- Contribution Guidelines ---",
+    "...contribution-guidelines"
+  ]
+}

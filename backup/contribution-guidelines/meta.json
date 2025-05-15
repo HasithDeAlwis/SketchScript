@@ -1,0 +1,10 @@
+{
+  "title": "Contribution Guidelines",
+  "icon": "GitPullRequestCreateArrow",
+  "pages": [
+    "index",
+    "getting-started",
+    "git",
+    "testing",    "code-style"
+  ]
+}
