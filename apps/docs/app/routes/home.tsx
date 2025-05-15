@@ -18,15 +18,15 @@ export default function Home() {
       }}
     >
       <div className="py-12">
-        <h1 className="text-xl font-bold mb-2">Fumadocs on React Router.</h1>
-        <p className="text-fd-muted-foreground mb-8">
-          The truly flexible docs framework on React.js.
+        <h1 className="text-xl font-bold mb-2">🛠️ SketchScript Docs</h1>
+        <p className="text-fd-muted-foreground m-8">
+          🚧 This docs site is a work in progress! Want to contribute? Check out our <Link to="/docs/contribution-guidelines" className="underline">contributing guidelines</Link> 📝 and help shape the future of SketchScript 💡
         </p>
         <Link
           className="text-sm bg-fd-primary text-fd-primary-foreground rounded-full font-medium px-4 py-2.5"
           to="/docs"
         >
-          Open Docs
+          📖 Open Docs
         </Link>
       </div>
     </HomeLayout>
