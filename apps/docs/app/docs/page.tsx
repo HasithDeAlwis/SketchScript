@@ -15,8 +15,8 @@ import * as path from 'node:path';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: 'New React Router App' },
-    { name: 'description', content: 'Welcome to React Router!' },
+    { title: 'SketchScript' },
+    { name: 'description', content: "SketchScript's official docs" },
   ];
 }
 const compiler = createCompiler({
@@ -47,7 +47,7 @@ export default function Page(props: Route.ComponentProps) {
   return (
     <DocsLayout
       nav={{
-        title: 'React Router',
+        title: 'SketchScript',
       }}
       tree={tree as PageTree.Root}
     >
