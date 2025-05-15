@@ -1,0 +1,10 @@
+{
+  "root": true,
+  "pages": [
+    "--- Welcome ---",
+    "index",
+    "quick-start",
+    "--- Contribution Guidelines ---",
+    "...contribution-guidelines"
+  ]
+}
