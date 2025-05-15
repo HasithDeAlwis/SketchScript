@@ -1,6 +1,6 @@
 [build]
-command = "pnpm nx build docs"
-publish = "apps/docs/.next"
+command = "react-router build"
+publish = "build/client"
 
-[[plugins]]
-package = "@netlify/plugin-nextjs"
+[dev]
+command = "react-router dev"
