@@ -1,11 +1,9 @@
-import NxWelcome from './nx-welcome';
+import { Presenter } from '@sandbox/features/code-editor';
 
-export function App() {
+export default function Index() {
   return (
     <div>
-      <NxWelcome title="sandbox" />
+      <Presenter />
     </div>
   );
 }
-
-export default App;
