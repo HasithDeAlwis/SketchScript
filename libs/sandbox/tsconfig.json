@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "allowJs": false,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "types": ["vite/client", "vitest", "@react-router/node"],
+    "paths": {
+      "@shared/*": ["../../libs/shared/*"],
+      "@sandbox/*": ["../../libs/sandbox/*"]
+    },
+    "moduleResolution": "bundler"
+  },
+  "files": [],
+  "include": [],
+  "extends": "../../tsconfig.base.json"
+}
