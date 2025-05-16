@@ -5,6 +5,7 @@ import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import netlifyPlugin from '@netlify/vite-plugin-react-router'
 import path from 'path'
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig(() => ({
   root: __dirname,
@@ -28,6 +29,7 @@ export default defineConfig(() => ({
     netlifyPlugin(),
     !process.env.VITEST && reactRouter(),
     nxViteTsPaths(),
+    tailwindcss(),
     nxCopyAssetsPlugin(['*.md']),
   ],
   // Uncomment this if you are using workers.
