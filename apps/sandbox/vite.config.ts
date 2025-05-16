@@ -3,6 +3,7 @@ import { defineConfig } from 'vite';
 import { reactRouter } from '@react-router/dev/vite';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
+import netlifyPlugin from '@netlify/vite-plugin-react-router'
 
 export default defineConfig(() => ({
   root: __dirname,
@@ -16,6 +17,8 @@ export default defineConfig(() => ({
     host: 'localhost',
   },
   plugins: [
+
+    netlifyPlugin(),
     !process.env.VITEST && reactRouter(),
     nxViteTsPaths(),
     nxCopyAssetsPlugin(['*.md']),
