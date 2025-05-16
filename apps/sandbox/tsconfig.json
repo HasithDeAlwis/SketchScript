@@ -6,6 +6,10 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "types": ["vite/client", "vitest", "@react-router/node"],
+    "paths": {
+      "@shared/*": ["../../libs/shared/*"],
+      "@sandbox/*": ["../../libs/sandbox/*"]
+    },
     "moduleResolution": "bundler"
   },
   "files": [],
