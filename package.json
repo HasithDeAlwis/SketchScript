@@ -12,15 +12,16 @@
     "isbot": "^4.4.0",
     "next": "15.3.1",
     "react": "19.0.0",
+    "react-arborist": "^3.4.3",
     "react-dom": "19.0.0",
     "react-router": "^7.6.0",
     "shiki": "^3.4.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
+    "@netlify/vite-plugin-react-router": "^1.0.1",
     "@nx/devkit": "21.0.3",
     "@nx/eslint": "21.0.3",
-    "@netlify/vite-plugin-react-router": "^1.0.1",
     "@nx/eslint-plugin": "21.0.3",
     "@nx/js": "21.0.3",
     "@nx/next": "^21.0.3",
