@@ -41,5 +41,14 @@ Thumbs.db
 .nx/cache
 .nx/workspace-data
 
+# ENV Vars
+**/.env.dev
+**/.env.prod
+**/.env.staging
+**/.env
+
+# Haskell Build Files
+**/dist-newstyle/**
+
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
