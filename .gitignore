@@ -47,6 +47,9 @@ Thumbs.db
 **/.env.staging
 **/.env
 
+# Netlify
+**/.netlify/**
+
 # Haskell Build Files
 **/dist-newstyle/**
 
