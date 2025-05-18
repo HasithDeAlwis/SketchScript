@@ -1,6 +1,6 @@
 # SketchScript
 
-[![CI](https://github.com/HasithDeAlwis/sketchscript/actions/workflows/ci.yml/badge.svg)](https://github.com/HasithDeAlwis/sketchscript/actions/workflows/ci.yml)
+[![BUILD](https://github.com/HasithDeAlwis/sketchscript/actions/workflows/build.yml/badge.svg)](https://github.com/HasithDeAlwis/sketchscript/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Docs](https://img.shields.io/badge/docs-available-brightgreen.svg)](https://sketchscript.dev)
 
@@ -27,12 +27,12 @@ SketchScript is a simple and expressive DSL written in Haskell that lets designe
 
 ## 📚 Documentation
 
-Full docs are available at [**sketchscript.dev**](https://sketchscript.dev).
+Full docs are available at [**docs.sketchscript.dev**](https://docs.sketchscript.dev).
 
-- [Quick Start](https://sketchscript.dev/quick-start)
-- [DSL Syntax Reference](https://sketchscript.dev/reference/syntax)
-- [Roadmap](https://sketchscript.dev/roadmap)
+- [Quick Start](https://docs.sketchscript.dev/docs/quick-start)
+- [DSL Syntax Reference](https://docs.sketchscript.dev/docs/reference/syntax)
+- [Roadmap](https://docs.sketchscript.dev/docs/roadmap)
 
 ---
 
-Built with ❤️ in Haskell. Contributions welcome — [read our contributing guide](./CONTRIBUTING.md).
+Built with ❤️ in Haskell. Contributions welcome — [read our contributing guide](https://docs.sketchscript.dev/docs/contribution-guidelines).
