@@ -1,0 +1,99 @@
+#+TITLE: Project Requirements
+#+AUTHOR:
+#+DATE: <2025-05-18>
+#+OPTIONS: toc:nil num:nil
+
+* Overview
+The app allows designers/developers to quickly prototype their designs using code.
+We're shipping to customers the code sandbox
+
+* Personas
+** Jake – Non-Paying User
+- Intends to use the app for personal use
+- Not working with a team
+- Won't pay
+** Amy - Paying User
+** John - Paying User (Enterprise)
+
+* Scope & Assumptions
+- Only non-paying users are supported in Phase 1
+- All features should work on desktop and mobile
+
+* Phases
+
+** Phase 1 – MVP
+*** MUST Have
+- [R1] Jake is automatically assigned one project on account creation
+  - ACCEPTANCE:
+    - [ ] Code sandbox is the first screen seen after account creation
+    - [ ] Project has default name “Untitled Project”
+- [R2] Jake can rename the project from the code sandbox
+  - ACCEPTANCE:
+    - [ ] Input field allows renaming
+    - [ ] Save triggers update
+    - [ ] Cannot submit empty name
+- [R3] Jake can install the CLI tool
+  - ACCEPTANCE:
+    - [ ] Install instructions are visible
+    - [ ] No login required for install
+- [R4] Jake cannot create more than one project
+  - ACCEPTANCE:
+    - [ ] “New Project” button is disabled or hidden
+    - [ ] API enforces max project = 1
+- [R5] Jake should not be able to see the project dashboard
+  - ACCEPTANCE:
+    - [ ] Only screen present are the login and the code sandbox
+- [R6] Jake should be able to make mockups
+  - ACCEPTANCE:
+    - [ ] SHould be able to create, edit, and delete files
+    - [ ] Should be able to create, edit, and delete folders
+    - [ ] Should update the drawing once John hits "save"
+- [R7] Jake should be able to export his mockups to HTML
+  - ACCEPTANCE:
+    - [ ] Should be able to hit "export to HTML"
+    - [ ] Should see a modal w/HTML code, that they can copy the code from
+
+*** SHOULD Have
+- NONE
+
+*** WON’T Have
+- [ ] Multi-project dashboard
+- [ ] Team collaboration features
+
+** Phase 2 – Payment Flows
+Builds on core, expands visibility.
+
+*** MUST Have
+- [R1] Infrastructure prepared to support multiple projects (but feature hidden)
+- [R2] Non-paying users still limited to one project (enforced server-side)
+
+*** SHOULD Have
+- [R3] Jake should have email reminders
+  - ACCEPTANCE:
+    - [ ] Jake should recieve marketting emails to promote the paid services
+- [R4] Jake should be able to updgrade their account
+  - ACCEPTANCE:
+    - [ ] Jake should have a button on the codesandbox
+    - [ ] Jake should go through an embeded Stripe form to payj
+- [R5] Amy should see a project dashboard
+  - ACCEPTANCE:
+    - [ ] Should get to the project dashboard with one click
+    - [ ] Should be able to create, rename, and delete projects
+
+*** COULD Have
+- UI that hints at upgrading for more projects
+
+*** WON’T Have
+- Project sharing
+- Paid user flows
+** Phase 3 - Enterprise Flows
+** Phase 4 - CLI & Tooling
+
+* Glossary
+- *MUST*: Critical to success of MVP
+- *SHOULD*: Nice to have but not essential
+- *COULD*: Useful enhancements
+- *WON’T*: Explicitly excluded
+
+* Changelog
+- <2025-05-18>: Initial draft created
