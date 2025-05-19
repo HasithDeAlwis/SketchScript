@@ -76,6 +76,7 @@ library
       , Auth.Handler
       , Auth.Config
 
+
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
 
@@ -114,6 +115,9 @@ library
       , warp
       , dotenv
       , string-conversions
+      , resource-pool
+      , postgresql-simple
+      , uuid
 
     -- Directories containing source files.
     hs-source-dirs:   src
