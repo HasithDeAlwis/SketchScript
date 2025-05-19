@@ -1,7 +1,9 @@
+import { useRef } from 'react'
 import { FileTree } from './file-tree'
-import { MyEditor } from './editor'
+import  MyEditor from './editor'
 
 export function Presenter() {
+  const treeRef = useRef(null)
   const data = [
     {
       id: "1",
@@ -20,14 +22,12 @@ export function Presenter() {
     { id: "3", name: "package.json" },
     { id: "4", name: "README.md" }
   ];
+
   return (
     <>
-    <div className='flex px-3'>
-    Hello, world
-    </div>
-    <div className='flex justify-between'>
-    <FileTree data={data} />
-    <MyEditor/>
+    <div className='flex p-2'>
+    <FileTree data={data} treeRef={treeRef} />
+    <MyEditor treeRef={treeRef}/>
     </div>
     </>
   )
