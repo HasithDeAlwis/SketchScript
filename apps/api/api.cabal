@@ -82,6 +82,9 @@ library
       , Auth.Handler
       , Auth.Config
       , User.DB
+      , Project.DB
+      , Project.Server
+      , Project.Handler
       , Workspace.DB
 
 
