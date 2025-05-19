@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
@@ -11,42 +11,47 @@
 module Auth.Handler where
 
 import Auth.Config
-import Configuration.Dotenv (defaultConfig, loadFile)
 import Control.Monad (unless)
 import Control.Monad.Except (runExceptT)
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Trans.Except (throwE)
-import Crypto.Random (getRandomBytes)
-import Data.Aeson
-import Data.Aeson (FromJSON, ToJSON)
+import Data.Aeson (Value (..))
 import Data.Aeson.Types qualified as Aeson
-import Data.ByteString.Base64.URL qualified as B64
 import Data.ByteString.Builder qualified as Builder
 import Data.ByteString.Char8 qualified as BS
-import Data.String.Conv
-import Data.Text (Text, unpack)
+import Data.Maybe (fromJust, fromMaybe)
+import Data.Pool
+import Data.Text (Text)
 import Data.Text.Encoding
-import GHC.Generics
+import Data.Time (UTCTime, defaultTimeLocale, parseTimeOrError)
+import Data.UUID (UUID, fromString)
+import Database.PostgreSQL.Simple qualified as DBPS
 import Network.HTTP.Client
 import Network.HTTP.Client.TLS
 import Network.OAuth.OAuth2
 import Network.URI
 import Servant
-import Servant.API.ResponseHeaders
 import Servant.Auth.Server
-import Servant.Server
-import Shared.Models.User
-import Shared.ServerResponses (Error)
+import Shared.Models.Role (Role (..))
+import Shared.Models.User (User (..))
+import Shared.Models.Workspace (Workspace (..))
 import Shared.Utils
-import System.Environment (getEnv)
-import URI.ByteString
+import URI.ByteString ()
 import URI.ByteString.QQ
+import User.DB (createUser, getUserByEmail)
 import Web.Cookie
+import Workspace.DB (createWorkspace, getUserWorkspaces, joinWorkspace)
 
-loginHandler :: CookieSettings -> AuthResult User -> Handler String
-loginHandler cookieCfg (Authenticated user) = do
+uuid :: String -> UUID
+uuid = fromJust . fromString
+
+-- Hardcoded UTCTime helper (ISO 8601 string)
+time :: String -> UTCTime
+time = parseTimeOrError True defaultTimeLocale "%Y-%m-%dT%H:%M:%S%QZ"
+
+loginHandler :: AuthResult User -> Handler String
+loginHandler (Authenticated _user) = do
   return "Already logged in"
-loginHandler cookieCfg _ = do
+loginHandler _ = do
   state <- liftIO genUrlSafe
   nonce <- liftIO genUrlSafe
   googleOAuth <- liftIO loadGoogleOAuth
@@ -79,8 +84,8 @@ loginHandler cookieCfg _ = do
 
   case toNetworkURI authUrl of
     Nothing -> throwError err500 {errBody = "Invalid auth URL"}
-    Just uri -> do
-      let loc = BS.pack $ uriToString id uri ""
+    Just newUri -> do
+      let loc = BS.pack $ uriToString id newUri ""
       throwError
         err302
           { errHeaders =
@@ -98,20 +103,21 @@ logoutHandler ::
 logoutHandler cs (Authenticated _) = pure $ clearSession cs NoContent
 logoutHandler _ _ = throwError err401 {errBody = "Unauthorized"}
 
-testHandler :: AuthResult User -> Handler String
+testHandler :: AuthResult User -> Handler User
 testHandler ar =
   case ar of
-    Authenticated user -> return $ name user
+    Authenticated user -> return user
     _ -> throwError err401 {errBody = "Unauthorized"}
 
 callbackHandler ::
+  Pool DBPS.Connection ->
   CookieSettings ->
   JWTSettings ->
   Maybe Text ->
   Maybe Text ->
   Maybe Text ->
-  Handler (Headers '[Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] Text)
-callbackHandler cs jwts mState mCode mCookieHeader = do
+  Handler (Headers '[Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] UUID)
+callbackHandler conn cs jwts mState mCode mCookieHeader = do
   code <- hoistMaybe err400 {errBody = "Missing code"} mCode
   state <- hoistMaybe err400 {errBody = "Missing state param"} mState
   rawCookies <- hoistMaybe err400 {errBody = "Missing cookies"} mCookieHeader
@@ -119,8 +125,7 @@ callbackHandler cs jwts mState mCode mCookieHeader = do
 
   let cookies = parseCookiesText $ encodeUtf8 rawCookies
       cookieState = lookup "oauth_state" cookies
-      cookieNonce = lookup "oauth_nonce" cookies
-
+      _cookieNonce = lookup "oauth_nonce" cookies -- unused for now, will be implemented later
   cookieStateValue <- hoistMaybe err400 {errBody = "Missing state cookie"} cookieState
 
   unless (state == cookieStateValue) $ throwError $ err403 {errBody = "State mismatch"}
@@ -132,25 +137,45 @@ callbackHandler cs jwts mState mCode mCookieHeader = do
     Left _ -> throwError err500 {errBody = "Token exchange failed"}
     Right at -> pure at
 
-  mEmail <- liftIO $ fetchGoogleEmail (accessToken accessToken')
-  email <- hoistMaybe err403 {errBody = "Email fetch failed"} mEmail
+  mGoogleUser <- liftIO $ fetchGoogleUser (accessToken accessToken')
+  GoogleUser {guEmail = mEmail, guName = mName} <-
+    hoistMaybe err403 {errBody = "Google user object missing"} mGoogleUser
 
-  let user = User {email = unpack email, age = 20, name = "Hasith"}
+  userEmail <- hoistMaybe err403 {errBody = "Email missing from Google response"} mEmail
+  userName <- hoistMaybe err403 {errBody = "Name missing from Google response"} mName
+
+  possibleUser <- liftIO $ getUserByEmail conn userEmail
+
+  (user, workspaceID : rest) <- case possibleUser of
+    [] -> do
+      user <- liftIO $ createUser conn userName userEmail
+      (workspace, role, _project) <- liftIO $ createWorkspace conn (Just "First Project") (Just "personal")
+      () <- liftIO $ joinWorkspace conn (user_id user) (workspace_id workspace) (role_id role)
+      pure (user, [workspace_id workspace])
+    [user] -> do
+      workspace <- liftIO $ getUserWorkspaces conn (user_id user)
+      pure (user, map workspace_id workspace)
+    _ -> throwError err403 {errBody = "Duplicate emails found"}
+
   mApplyCookies <- liftIO $ acceptLogin cs jwts user
   applyCookies <- hoistMaybe err500 {errBody = "Could not create JWT"} mApplyCookies
-  return $ applyCookies "Successfully logged in"
+  return $ applyCookies workspaceID
 
-fetchGoogleEmail :: AccessToken -> IO (Maybe Text)
-fetchGoogleEmail token = do
+data GoogleUser = GoogleUser {guEmail :: Maybe Text, guName :: Maybe Text}
+
+fetchGoogleUser :: AccessToken -> IO (Maybe GoogleUser)
+fetchGoogleUser token = do
   manager <- newManager tlsManagerSettings
   let url = [uri|https://www.googleapis.com/oauth2/v2/userinfo|]
-  runExceptT (authGetJSON manager token url) >>= \res ->
-    case res of
-      Left _ -> return Nothing
-      Right obj -> return $ Just $ objEmail obj
-  where
-    objEmail :: Value -> Text
-    objEmail (Object o) = case Aeson.parseMaybe (Aeson..: "email") o of
-      Just e -> e
-      Nothing -> "unknown"
-    objEmail _ = "unknown"
+  runExceptT (authGetJSON manager token url) >>= \case
+    Left _ -> return Nothing
+    Right (Object o) -> do
+      let parsedEmail = fromMaybe "unknown" $ Aeson.parseMaybe (Aeson..: "email") o
+          parsedName = fromMaybe "unknown" $ Aeson.parseMaybe (Aeson..: "name") o
+      return $
+        Just
+          GoogleUser
+            { guEmail = if parsedEmail == "unknown" then Nothing else Just parsedEmail,
+              guName = if parsedName == "unknown" then Nothing else Just parsedName
+            }
+    Right _ -> return Nothing
