@@ -2,13 +2,26 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "allowJs": false,
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "types": ["vite/client", "vitest", "@react-router/node"],
+    "types": [
+      "vite/client",
+      "vitest",
+      "@react-router/node"
+    ],
+    "references": [
+      {
+        "path": "./tsconfig.lib.json"
+      }
+    ],
     "paths": {
-      "@shared/*": ["../../libs/shared/*"],
-      "@sandbox/*": ["../../libs/sandbox/*"]
+      "@shared/*": [
+        "../../libs/shared/*"
+      ],
+      "@sandbox/*": [
+        "../../libs/sandbox/*"
+      ]
     },
     "moduleResolution": "bundler"
   },
