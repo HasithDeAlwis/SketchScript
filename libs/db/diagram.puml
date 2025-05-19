@@ -1,0 +1,103 @@
+@startuml
+title DB Schema – Workspace Ownership + Multi-Membership + Per-Workspace Billing
+
+entity User {
+  +id : UUID
+  +email : Text
+  +name : Text
+  +created_at : Timestamp
+}
+
+entity Workspace {
+  +id : UUID
+  +name : Text
+  +type : Text <<personal | team | enterprise>>
+  +created_at : Timestamp
+}
+
+entity Role {
+  +id : UUID
+  +workspace: UUID
+  +name : Text <<admin | editor | viewer>>
+  +can_create_project : Bool
+  +can_edit_project : Bool
+  +can_delete_project : Bool
+  +can_export : Bool
+  +can_manage_members : Bool
+}
+
+entity WorkspaceMembership {
+  +id : UUID
+  +user_id : UUID
+  +workspace_id : UUID
+  +role_id : UUID
+  +joined_at : Timestamp
+}
+
+entity Project {
+  +id : UUID
+  +workspace_id : UUID
+  +name : Text
+  +created_at : Timestamp
+  +updated_at : Timestamp
+  +is_archived : Bool
+}
+
+entity File {
+  +id : UUID
+  +project_id : UUID
+  +parent_folder_id : UUID <<nullable>>
+  +name : Text
+  +type : Text <<file | folder>>
+  +content : Text <<nullable if folder>>
+  +created_at : Timestamp
+  +updated_at : Timestamp
+}
+
+entity Export {
+  +id : UUID
+  +project_id : UUID
+  +export_type : Text <<html>>
+  +content : Text
+  +exported_at : Timestamp
+}
+
+entity Subscription {
+  +id : UUID
+  +workspace_id : UUID
+  +plan : Text <<free | pro | enterprise>>
+  +status : Text <<active | cancelled>>
+  +stripe_customer_id : Text
+  +stripe_subscription_id : Text
+  +started_at : Timestamp
+  +ended_at : Timestamp <<nullable>>
+}
+
+
+
+
+entity Invite {
+  +id : UUID
+  +workspace_id : UUID
+  +invited_email : UUID
+  +invited_by : UUID
+  +role_id : UUID
+  +token : Text
+  +status : Text <<pending | accepted | expired>>
+  +sent_at : Timestamp
+  +expires_at : Timestamp
+  +accepted_at : Timestamp <<nullable>>
+}
+
+Workspace ||--o{ Invite : has
+Role ||--o{ Workspace: belongs to
+User ||--o{ Invite : invited by
+User ||--o{ WorkspaceMembership : belongs to
+Workspace ||--o{ WorkspaceMembership : has
+WorkspaceMembership ||--|| Role : as
+Workspace ||--o{ Project : owns
+Workspace ||--|| Subscription : has
+Project ||--o{ File : contains
+Project ||--o{ Export : has
+
+@enduml
