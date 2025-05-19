@@ -70,6 +70,12 @@ library
       , User.Handler
       , User.Api
       , Shared.Models.User
+      , Shared.Models.File
+      , Shared.Models.Invite
+      , Shared.Models.Project
+      , Shared.Models.Role
+      , Shared.Models.Subscription
+      , Shared.Models.Workspace
       , Shared.Utils
       , Shared.ServerResponses
       , Auth.Server
