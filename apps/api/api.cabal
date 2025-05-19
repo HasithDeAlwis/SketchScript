@@ -81,6 +81,7 @@ library
       , Auth.Server
       , Auth.Handler
       , Auth.Config
+      , User.DB
       , Workspace.DB
 
 
