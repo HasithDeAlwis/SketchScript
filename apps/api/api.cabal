@@ -81,6 +81,7 @@ library
       , Auth.Server
       , Auth.Handler
       , Auth.Config
+      , Workspace.DB
 
 
     -- LANGUAGE extensions used by modules in this package.
