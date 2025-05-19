@@ -1,23 +1,26 @@
-import  { lazy, useRef, Suspense } from 'react';
+import { Suspense } from 'react';
+import { Editor } from '@monaco-editor/react'
+import { options, handleEditorDidMount } from '../hook/config'
 
+export default function MyEditor() {
 
-export function MyEditor() {
-  const editorRef = useRef(null);
-
-  function handleEditorDidMount(editor, monaco) {
-    editorRef.current = editor;
-  }
-
-  function showValue() {
-    alert(editorRef.current.getValue());
-  }
 
   return (
     <>
-      <button onClick={showValue}>Show value</button>
-    <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<div>Loading editor...</div>}>
+        <div className='h-screen w-screen'>
 
-    </Suspense>
+        <Editor
+          options={options}
+          height="100%"
+          width="100%"
+          defaultLanguage="ui-script"
+          defaultValue=""
+          theme="sketch-script-dark"
+          beforeMount={handleEditorDidMount}
+        />
+        </div>
+      </Suspense>
     </>
   );
 }
