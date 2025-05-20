@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE LambdaCase #-}
@@ -14,7 +15,7 @@ import Auth.Config
 import Control.Monad (unless)
 import Control.Monad.Except (runExceptT)
 import Control.Monad.IO.Class (liftIO)
-import Data.Aeson (Value (..))
+import Data.Aeson (ToJSON, Value (..))
 import Data.Aeson.Types qualified as Aeson
 import Data.ByteString.Builder qualified as Builder
 import Data.ByteString.Char8 qualified as BS
@@ -25,6 +26,7 @@ import Data.Text.Encoding
 import Data.Time (UTCTime, defaultTimeLocale, parseTimeOrError)
 import Data.UUID (UUID, fromString)
 import Database.PostgreSQL.Simple qualified as DBPS
+import GHC.Generics (Generic)
 import Network.HTTP.Client
 import Network.HTTP.Client.TLS
 import Network.OAuth.OAuth2
@@ -103,11 +105,18 @@ logoutHandler ::
 logoutHandler cs (Authenticated _) = pure $ clearSession cs NoContent
 logoutHandler _ _ = throwError err401 {errBody = "Unauthorized"}
 
-testHandler :: AuthResult User -> Handler User
-testHandler ar =
-  case ar of
-    Authenticated user -> return user
-    _ -> throwError err401 {errBody = "Unauthorized"}
+data MeHandlerResponse = MeHandlerResponse {
+  user :: User,
+  workspaces :: [Workspace]
+  } deriving (Show, Generic)
+
+instance ToJSON MeHandlerResponse
+
+meHandler :: Pool DBPS.Connection -> AuthResult User -> Handler MeHandlerResponse
+meHandler cons (Authenticated user) = do
+  workspaces <- liftIO $ getUserWorkspaces cons $ user_id user
+  return $ MeHandlerResponse user workspaces
+meHandler _ _ = throwError err401 {errBody = "User is not authorized"}
 
 callbackHandler ::
   Pool DBPS.Connection ->
@@ -116,7 +125,8 @@ callbackHandler ::
   Maybe Text ->
   Maybe Text ->
   Maybe Text ->
-  Handler (Headers '[Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] UUID)
+  Handler NoContent
+-- Handler (Headers '[Header "Location" Text, Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] User)
 callbackHandler conn cs jwts mState mCode mCookieHeader = do
   code <- hoistMaybe err400 {errBody = "Missing code"} mCode
   state <- hoistMaybe err400 {errBody = "Missing state param"} mState
@@ -159,7 +169,23 @@ callbackHandler conn cs jwts mState mCode mCookieHeader = do
 
   mApplyCookies <- liftIO $ acceptLogin cs jwts user
   applyCookies <- hoistMaybe err500 {errBody = "Could not create JWT"} mApplyCookies
-  return $ applyCookies workspaceID
+  let responseWithCookies = applyCookies NoContent
+      allHeaders = getHeaders responseWithCookies
+
+  -- Extract only Set-Cookie headers
+  let setCookieHeaders =
+        [ (hName, hVal)
+          | (hName, hVal) <- allHeaders,
+            hName == "Set-Cookie"
+        ]
+
+  let redirectLocation = ("Location", "http://localhost:4200/login")
+
+  throwError
+    err302
+      { errHeaders = redirectLocation : setCookieHeaders
+      }
+  return NoContent
 
 data GoogleUser = GoogleUser {guEmail :: Maybe Text, guName :: Maybe Text}
 

@@ -12,6 +12,7 @@ import Database.PostgreSQL.Simple.FromRow
 import Database.PostgreSQL.Simple.ToField
 import Database.PostgreSQL.Simple.ToRow
 import Shared.Models.User
+import Shared.Models.Workspace (Workspace (..))
 
 getUserByEmail :: Pool Connection -> Text -> IO [User]
 getUserByEmail pool userEmail =
@@ -32,3 +33,4 @@ createUser pool name email = do
         "INSERT INTO users (id, name, email, created_at) VALUES (?, ?, ?, ?) RETURNING id AS user_id, name AS user_name, email AS user_email, created_at AS user_create_at"
         (uid, name, email, now)
     return user
+
