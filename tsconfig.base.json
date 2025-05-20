@@ -11,16 +11,19 @@
     "rootDir": ".",
     "module": "esnext",
     "moduleResolution": "node",
+    "paths": {
+      "@shared/*": [
+        "../../libs/shared/*"
+      ],
+      "@sandbox/*": [
+        "../../libs/sandbox/*"
+      ]
+    },
     "declaration": false,
     "importHelpers": true,
     "sourceMap": true,
     "skipDefaultLibCheck": true,
-    "skipLibCheck": true,
-    "paths": {
-      "@shared/*": [
-        "./libs/shared/*"
-      ]
-    }
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules",

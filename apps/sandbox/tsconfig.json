@@ -2,25 +2,29 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "allowJs": false,
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "types": ["vite/client", "vitest", "@react-router/node"],
-    "paths": {
-      "@shared/*": ["../../libs/shared/*"],
-      "@sandbox/*": ["../../libs/sandbox/*"]
-    },
-    "moduleResolution": "bundler"
+    "types": [
+      "vite/client",
+      "vitest",
+    ],
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "target": "ESNext",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2022"
+    ],
+    "module": "ESNext",
   },
-  "files": [],
-  "include": [],
   "references": [
     {
       "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
     }
   ],
+  "files": [],
+  "include": [],
   "extends": "../../tsconfig.base.json"
 }
