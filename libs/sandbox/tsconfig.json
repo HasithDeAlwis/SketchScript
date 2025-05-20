@@ -8,23 +8,22 @@
     "types": [
       "vite/client",
       "vitest",
-      "@react-router/node"
     ],
-    "references": [
-      {
-        "path": "./tsconfig.lib.json"
-      }
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "target": "ESNext",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2022"
     ],
-    "paths": {
-      "@shared/*": [
-        "../../libs/shared/*"
-      ],
-      "@sandbox/*": [
-        "../../libs/sandbox/*"
-      ]
-    },
-    "moduleResolution": "bundler"
+    "module": "ESNext",
   },
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    }
+  ],
   "files": [],
   "include": [],
   "extends": "../../tsconfig.base.json"
