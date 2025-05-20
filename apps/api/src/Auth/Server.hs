@@ -7,19 +7,20 @@ import Auth.Handler
   ( callbackHandler,
     loginHandler,
     logoutHandler,
-    testHandler,
+    meHandler,
+    MeHandlerResponse
   )
 import Data.Pool
 import Data.Text (Text)
-import Database.PostgreSQL.Simple qualified as DBPS
 import Data.UUID (UUID)
+import Database.PostgreSQL.Simple qualified as DBPS
 import Servant
 import Servant.Auth.Server
 import Shared.Models.User
 
 type Protected =
   "logout" :> Get '[JSON] (Headers '[Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
-    :<|> "test" :> Get '[JSON] User
+    :<|> "me" :> Get '[JSON] MeHandlerResponse
     :<|> "login" :> Get '[JSON] String
 
 type API auths =
@@ -28,7 +29,9 @@ type API auths =
       :> QueryParam "state" Text
       :> QueryParam "code" Text
       :> Header "Cookie" Text
-      :> Get '[JSON] (Headers '[Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] UUID)
+      :> Get '[JSON] NoContent
+
+-- :> Get '[JSON] (Headers '[Header "Location" Text, Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] User)
 
 server :: Pool DBPS.Connection -> CookieSettings -> JWTSettings -> Server (API auths)
 server cons cs jwts =
@@ -37,5 +40,5 @@ server cons cs jwts =
     protectedHandlers :: AuthResult User -> Server Protected
     protectedHandlers authResult =
       logoutHandler cs authResult
-        :<|> testHandler authResult
+        :<|> meHandler cons authResult
         :<|> loginHandler authResult

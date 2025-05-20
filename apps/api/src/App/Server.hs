@@ -10,6 +10,7 @@ import Data.ByteString (ByteString)
 import Data.ByteString.Char8 (pack)
 import Data.Pool
 import Database.PostgreSQL.Simple qualified as DBPS
+import Network.Wai.Middleware.Cors
 import Servant
 import Servant.Auth.Server
 import System.Environment (getEnv)
@@ -33,6 +34,14 @@ coreServer :: Pool DBPS.Connection -> CookieSettings -> JWTSettings -> Server (A
 coreServer cons cs jwts =
   User.server :<|> Auth.server cons cs jwts
 
+corsPolicy :: CorsResourcePolicy
+corsPolicy =
+  simpleCorsResourcePolicy
+    { corsOrigins = Just (["http://localhost:4200"], True),
+      corsRequestHeaders = ["Authorization", "Content-Type"],
+      corsMethods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    }
+
 app :: IO Application
 app = do
   _ <- loadFile defaultConfig
@@ -53,4 +62,4 @@ app = do
       jwtSettings = defaultJWTSettings jwtKey
       context = cookieCfg :. jwtSettings :. EmptyContext
       cookieAPI = Proxy :: Proxy (API '[Cookie])
-  return $ serveWithContext cookieAPI context (coreServer pool cookieCfg jwtSettings)
+  return $ cors (const $ Just corsPolicy) $ serveWithContext cookieAPI context (coreServer pool cookieCfg jwtSettings)
