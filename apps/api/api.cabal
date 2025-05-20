@@ -133,6 +133,7 @@ library
       , resource-pool
       , postgresql-simple
       , uuid
+      , wai-cors
 
     -- Directories containing source files.
     hs-source-dirs:   src
