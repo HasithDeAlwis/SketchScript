@@ -10,10 +10,10 @@ export async function clientLoader() {
     });
 
     if (res.status === 200) {
-      // save to context
       return redirect('/')
     }
   } catch (err) {
+
     console.error('Client loader error:', err);
   }
 }

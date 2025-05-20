@@ -1,44 +1,52 @@
-import { useEffect, useRef } from 'react'
-import { Tree } from 'react-arborist'
-import { Cloud, EllipsisVertical } from 'lucide-react'
-import { Node } from './tree-node'
-import { FileTreeButtons } from './file-tree-buttons'
+import { useEffect, useRef, RefObject } from 'react';
+import { Tree, TreeApi } from 'react-arborist';
+import { Cloud, EllipsisVertical } from 'lucide-react';
+import { Node } from './tree-node';
+import { FileTreeButtons } from './file-tree-buttons';
 
-export function FileTree({ data, treeRef, treeWidth, setTreeWidth }) {
-  const isResizing = useRef(false)
+export type FileData = {
+  name: string;
+};
+
+type FileTreeProps = {
+  data: FileData[];
+  treeRef: RefObject<TreeApi<FileData> | null>;
+  treeWidth: number;
+  setTreeWidth: (width: number) => void;
+};
+
+export function FileTree({ data, treeRef, treeWidth, setTreeWidth }: FileTreeProps) {
+  const isResizing = useRef(false);
 
   const handleMouseDown = () => {
-    isResizing.current = true
-  }
+    isResizing.current = true;
+  };
 
   const handleMouseUp = () => {
-    isResizing.current = false
-  }
+    isResizing.current = false;
+  };
 
   const handleMouseMove = (e: MouseEvent) => {
     if (isResizing.current) {
-      setTreeWidth(Math.max(210, e.clientX))
+      setTreeWidth(Math.max(210, e.clientX));
     }
-  }
+  };
 
   useEffect(() => {
-
-    window.addEventListener('mousemove', handleMouseMove)
-    window.addEventListener('mouseup', handleMouseUp)
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove)
-      window.removeEventListener('mouseup', handleMouseUp)
-    }
-  }, [])
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col justify-between h-screen pb-2 border-r-2 border-primary bg-muted/20">
       {/* Main horizontal layout: resizable panel + handle */}
       <div className="flex flex-row h-full">
         {/* Resizable tree panel */}
-        <div
-          className="flex flex-col p-3 bg-muted/10 backdrop-blur-sm"
-        >
+        <div className="flex flex-col p-3 bg-muted/10 backdrop-blur-sm">
           {/* Toolbar */}
           <div className="flex items-center justify-between mb-4 border-border">
             <div className="flex items-center gap-2">
@@ -49,9 +57,8 @@ export function FileTree({ data, treeRef, treeWidth, setTreeWidth }) {
           </div>
 
           {/* Tree view */}
-          <div className="flex-1 overflow-auto"
-          >
-            <Tree ref={treeRef} initialData={data} width={treeWidth}>
+          <div className="flex-1 overflow-auto">
+            <Tree<FileData> ref={treeRef} initialData={data} width={treeWidth}>
               {Node}
             </Tree>
           </div>
@@ -66,5 +73,5 @@ export function FileTree({ data, treeRef, treeWidth, setTreeWidth }) {
 
       <FileTreeButtons treeRef={treeRef} />
     </div>
-  )
+  );
 }

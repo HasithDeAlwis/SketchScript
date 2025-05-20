@@ -1,10 +1,27 @@
-import { PencilRuler, FolderClosed, FolderOpen, Pencil, Trash, Code } from 'lucide-react';
+import {
+  PencilRuler,
+  FolderClosed,
+  FolderOpen,
+  Pencil,
+  Trash,
+  Code,
+} from "lucide-react";
+import type { TreeApi, NodeApi } from "react-arborist";
 
-export const Node = ({ node, style, dragHandle, tree }) => {
+type FileData = {
+  name: string;
+};
 
+type NodeProps = {
+  node: NodeApi<FileData>;
+  style: React.CSSProperties;
+  dragHandle?: React.Ref<HTMLDivElement>;
+  tree: TreeApi<FileData>;
+};
 
-  function getNodeIcon(node) {
-    if (node.isLeaf && node.data.name.endsWith('.sks')) {
+export const Node: React.FC<NodeProps> = ({ node, style, dragHandle, tree }) => {
+  function getNodeIcon(node: NodeApi<FileData>) {
+    if (node.isLeaf && node.data.name.endsWith(".sks")) {
       return <PencilRuler className="w-4 h-4 text-primary" />;
     } else if (node.isLeaf) {
       return <Code className="w-4 h-4 text-primary" />;
@@ -15,28 +32,32 @@ export const Node = ({ node, style, dragHandle, tree }) => {
     }
   }
 
-
   return (
     <div
       ref={dragHandle}
-      style={{...style, width: '90%'}}
-      className="group flex items-center justify-between hover:bg-stone-200 transition-colors cursor-pointer select-none "
+      style={{ ...style, width: "90%" }}
+      className="flex items-center justify-between transition-colors cursor-pointer select-none group hover:bg-stone-200"
       onClick={() => node.isInternal && node.toggle()}
     >
-      {/* Left side: icon + name or input */}
-      <div className="flex flex-1 gap-2 items-center justify-between max-w-full">
-        <div className='flex flex-1 gap-2 items-center'>
+      <div className="flex items-center justify-between flex-1 max-w-full gap-2">
+        <div className="flex items-center flex-1 gap-2">
           {getNodeIcon(node)}
           {node.isEditing ? (
             <input
               type="text"
               defaultValue={node.data.name}
-              className="w-full text-sm font-medium text-primary border-none outline-none"
+              className="w-full text-sm font-medium border-none outline-none text-primary"
               onFocus={(e) => e.currentTarget.select()}
               onBlur={() => node.reset()}
               onKeyDown={(e) => {
-                if (e.key === 'Escape') { node.reset(); e.preventDefault(); node.blur() };
-                if (e.key === 'Enter') node.submit(e.currentTarget.value);
+                if (e.key === "Escape") {
+                  node.reset();
+                  e.preventDefault();
+                  e.stopPropagation();
+                }
+                if (e.key === "Enter") {
+                  node.submit(e.currentTarget.value);
+                }
               }}
               autoFocus
             />
@@ -47,34 +68,33 @@ export const Node = ({ node, style, dragHandle, tree }) => {
           )}
         </div>
 
-      {!node.isEditing && (
-        <div className="w-full flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className='ml-auto'>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              node.edit();
-            }}
-            title="Rename"
-            className="cursor-pointer rounded hover:bg-muted/50 transition"
-          >
-            <Pencil className="w-4 h-4 text-foreground" />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              tree.delete(node.id);
-            }}
-            title="Delete"
-            className="cursor-pointer rounded hover:bg-muted/50 transition"
-          >
-            <Trash className="w-4 h-4 text-red-500" />
-          </button>
+        {!node.isEditing && (
+          <div className="flex items-center w-full gap-1 transition-opacity opacity-0 group-hover:opacity-100">
+            <div className="flex items-center gap-1 ml-auto">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  node.edit();
+                }}
+                title="Rename"
+                className="transition rounded cursor-pointer hover:bg-primary/10"
+              >
+                <Pencil className="w-4 h-4 text-foreground" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  tree.delete(node.id);
+                }}
+                title="Delete"
+                className="transition rounded cursor-pointer hover:bg-primary/10"
+              >
+                <Trash className="w-4 h-4 text-red-500" />
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
       </div>
-
     </div>
   );
 };

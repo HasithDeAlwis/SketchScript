@@ -18,6 +18,14 @@
       "ES2022"
     ],
     "module": "ESNext",
+    "paths": {
+      "@shared/*": [
+        "../../libs/shared/*"
+      ],
+      "@sandbox/*": [
+        "../../libs/sandbox/*"
+      ]
+    },
   },
   "references": [
     {

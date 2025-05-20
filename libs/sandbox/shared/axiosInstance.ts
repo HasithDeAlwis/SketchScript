@@ -1,7 +1,12 @@
 import axios from 'axios';
 
+const isBrowser = typeof window !== 'undefined';
+
 export const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8080',
-  timeout: 10000
+  baseURL: isBrowser
+    ? import.meta.env.VITE_PUBLIC_API_BASE
+    : process.env.API_BASE,
+  withCredentials: true,
+  timeout: 10000,
 });
 
