@@ -1,11 +1,10 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Tree } from 'react-arborist'
 import { Cloud, EllipsisVertical } from 'lucide-react'
-import { Node } from './tree-node.tsx'
+import { Node } from './tree-node'
 import { FileTreeButtons } from './file-tree-buttons'
 
-export function FileTree({ data, treeRef }) {
-  const [treeWidth, setTreeWidth] = useState(210)
+export function FileTree({ data, treeRef, treeWidth, setTreeWidth }) {
   const isResizing = useRef(false)
 
   const handleMouseDown = () => {
@@ -33,15 +32,15 @@ export function FileTree({ data, treeRef }) {
   }, [])
 
   return (
-    <div className="flex border-r-2 border-primary h-screen bg-muted/20 pb-2 flex-col justify-between">
+    <div className="flex flex-col justify-between h-screen pb-2 border-r-2 border-primary bg-muted/20">
       {/* Main horizontal layout: resizable panel + handle */}
       <div className="flex flex-row h-full">
         {/* Resizable tree panel */}
         <div
-          className="p-3 flex flex-col bg-muted/10 backdrop-blur-sm"
+          className="flex flex-col p-3 bg-muted/10 backdrop-blur-sm"
         >
           {/* Toolbar */}
-          <div className="flex items-center justify-between border-border mb-4">
+          <div className="flex items-center justify-between mb-4 border-border">
             <div className="flex items-center gap-2">
               <p className="text-sm font-medium">Files</p>
               <Cloud className="w-5 h-5" />
