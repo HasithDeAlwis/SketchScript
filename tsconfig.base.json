@@ -13,10 +13,10 @@
     "moduleResolution": "node",
     "paths": {
       "@shared/*": [
-        "../../libs/shared/*"
+        "./libs/shared/*"
       ],
       "@sandbox/*": [
-        "../../libs/sandbox/*"
+        "./libs/sandbox/*"
       ]
     },
     "declaration": false,

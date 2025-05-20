@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@shared/ui/card"
 import { PencilRuler } from "lucide-react"
 
+
 export function LoginCard() {
 
   return (
@@ -10,9 +11,6 @@ export function LoginCard() {
         <div className="absolute top-[15%] left-[10%] w-16 h-16 rounded-full bg-secondary opacity-20"></div>
         <div className="absolute top-[60%] right-[15%] w-24 h-24 rounded-full bg-accent opacity-20"></div>
         <div className="absolute bottom-[20%] left-[20%] w-20 h-20 rounded-full bg-[#FFEFA1] opacity-20"></div>
-
-        {/* Subtle grid lines */}
-        <div className="absolute inset-0 bg-[url('/placeholder.svg?height=2&width=2')] bg-[length:20px_20px] opacity-[0.03]"></div>
       </div>
 
       <Card className="relative z-10 w-full max-w-md mx-6 shadow-lg border-muted/50">
@@ -30,10 +28,9 @@ export function LoginCard() {
             </p>
 
             <div className="w-full max-w-xs">
-              <a href={'http://localhost:8080/login'}>
+              <a href={import.meta.env.VITE_PUBLIC_API_BASE + '/login'}>
                 <div
                   className="w-full py-6 transition-all duration-200 border shadow-sm bg-background hover:bg-background/90 text-foreground border-muted hover:shadow-md group"
-                  variant="outline"
                 >
                   <div className="flex items-center justify-center">
                     <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">

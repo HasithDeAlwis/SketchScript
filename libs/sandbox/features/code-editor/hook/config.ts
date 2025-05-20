@@ -1,3 +1,4 @@
+import { type Monaco } from '@monaco-editor/react'
 export const options = {
   fontSize: 14,
   fontFamily: 'Jetbrains-Mono',
@@ -9,7 +10,7 @@ export const options = {
   bracketPairColorization: {
     enabled: true
   },
-  cursorBlinking: 'expand',
+  cursorBlinking: 'smooth',
   formatOnPaste: true,
   suggest: {
     showFields: false,
@@ -17,7 +18,9 @@ export const options = {
   }
 }
 
-export function handleEditorDidMount(monaco) {
+export function handleEditorDidMount(
+  monaco: Monaco
+) {
   const languageId = 'ui-script'
 
   monaco.editor.defineTheme('sketch-script-light', {
