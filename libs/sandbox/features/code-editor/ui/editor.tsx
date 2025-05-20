@@ -2,10 +2,9 @@ import { Suspense } from 'react';
 import { Editor } from '@monaco-editor/react'
 import { options, handleEditorDidMount } from '../hook/config'
 
-export default function MyEditor({ treeWidth }) {
+export default function MyEditor() {
 
 
-  console.log(treeWidth)
   return (
     <>
       <Suspense fallback={<div>Loading editor...</div>}>
