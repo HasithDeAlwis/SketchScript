@@ -48,7 +48,7 @@ export function EditorHeader() {
                 <div className="flex items-center">
                     <input
                         type="text"
-                        value={projectName || "Untitled Project"}
+                        value={projectName}
                         onChange={(e) => setProjectName(e.target.value)}
                         className="bg-transparent border-0 focus:ring-0 focus:outline-none font-medium text-foreground max-w-[200px]"
                     />
