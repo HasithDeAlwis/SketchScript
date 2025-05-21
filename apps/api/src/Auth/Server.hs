@@ -4,11 +4,11 @@
 module Auth.Server (API, server) where
 
 import Auth.Handler
-  ( callbackHandler,
+  ( MeHandlerResponse,
+    callbackHandler,
     loginHandler,
     logoutHandler,
     meHandler,
-    MeHandlerResponse
   )
 import Data.Pool
 import Data.Text (Text)

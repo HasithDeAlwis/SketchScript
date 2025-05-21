@@ -10,7 +10,9 @@ import Data.ByteString (ByteString)
 import Data.ByteString.Char8 (pack)
 import Data.Pool
 import Database.PostgreSQL.Simple qualified as DBPS
+import File.Server qualified as File
 import Network.Wai.Middleware.Cors
+import Project.Server qualified as Project
 import Servant
 import Servant.Auth.Server
 import System.Environment (getEnv)
@@ -19,7 +21,7 @@ import User.Server qualified as User
 
 type DBConnectionString = ByteString
 
-type API auths = User.API :<|> Auth.API auths
+type API auths = User.API :<|> Auth.API auths :<|> Project.API auths :<|> File.API auths
 
 initConnectionPool :: DBConnectionString -> IO (Pool DBPS.Connection)
 initConnectionPool connStr =
@@ -32,7 +34,7 @@ initConnectionPool connStr =
 
 coreServer :: Pool DBPS.Connection -> CookieSettings -> JWTSettings -> Server (API auths)
 coreServer cons cs jwts =
-  User.server :<|> Auth.server cons cs jwts
+  User.server :<|> Auth.server cons cs jwts :<|> Project.server cons :<|> File.server cons
 
 corsPolicy :: CorsResourcePolicy
 corsPolicy =
