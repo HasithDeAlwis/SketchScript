@@ -3,7 +3,7 @@ import { FileTree } from './file-tree'
 import { Canvas } from '../canvas/ui'
 import { MyEditor } from './editor'
 
-export function Presenter() {
+export function CodeEditor() {
   const treeRef = useRef(null)
 
   const data = [
