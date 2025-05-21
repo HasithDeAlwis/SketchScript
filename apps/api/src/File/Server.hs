@@ -2,6 +2,9 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
+{-# HLINT ignore "Use newtype instead of data" #-}
 
 module File.Server (API, server) where
 
@@ -45,4 +48,4 @@ server pool (Authenticated _) =
         Right files -> pure files
     getFilesHandler Nothing =
       throwError err400 {errBody = "Missing pid query parameter"}
-server _ _ = throwAll err401
+server _ _ = throwAll err401 {errBody = "Unauthorized User"}
