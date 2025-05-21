@@ -1,5 +1,7 @@
 import { Editor } from '@monaco-editor/react';
+import { RootState } from '../../../stores/index';
 import { options, handleEditorDidMount } from '../hook/config';
+import { useSelector } from 'react-redux';
 import { Skeleton } from '@shared/ui/skeleton';
 
 function EditorLoadingFallback() {
@@ -11,6 +13,11 @@ function EditorLoadingFallback() {
 }
 
 export function MyEditor() {
+  const theme = useSelector((state: RootState) => state.theme);
+
+  const monacoTheme =
+    theme === 'light' ? 'sketch-script-light' : 'sketch-script-dark';
+
   return (
     <div className="w-full h-screen">
       <Editor
@@ -20,7 +27,7 @@ export function MyEditor() {
         width="100%"
         defaultLanguage="ui-script"
         defaultValue=""
-        theme="sketch-script-dark"
+        theme={monacoTheme}
         beforeMount={handleEditorDidMount}
       />
     </div>
