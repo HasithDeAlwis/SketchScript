@@ -9,7 +9,7 @@
       "vite/client",
       "vitest",
     ],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "baseUrl": ".",
     "target": "ESNext",
     "lib": [

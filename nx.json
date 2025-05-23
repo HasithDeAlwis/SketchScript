@@ -40,7 +40,8 @@
         "typecheckTargetName": "typecheck"
       },
       "exclude": [
-        "**/docs/**/*"
+        "**/docs/**/*",
+        "**/sandbox/**/*"
       ]
     },
     {
@@ -63,7 +64,8 @@
         "watchDepsTargetName": "watch-deps"
       },
       "exclude": [
-        "**/docs/**/*"
+        "**/docs/**/*",
+        "**/sandbox/**/*"
       ]
     },
     {
