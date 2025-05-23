@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2015",
+    "target": "ESNext",
     "lib": [
       "es2020",
       "dom"
@@ -10,7 +10,7 @@
     "baseUrl": ".",
     "rootDir": ".",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "paths": {
       "@shared/*": [
         "./libs/shared/*"
