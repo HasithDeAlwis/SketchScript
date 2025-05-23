@@ -1,9 +1,9 @@
 import { fetchFilesByProjectId } from '@sandbox/api/files';
+import { redirect } from 'react-router';
 import { fetchProjectsByWorkspaceId } from '@sandbox/api/projects';
 import { store } from '@sandbox/stores'; // import the Redux store directly
 import { CodeEditor } from '@sandbox/features/code-editor';
 import { EditorHeader } from '@sandbox/features/code-editor/ui/header';
-
 
 export async function clientLoader() {
   try {
@@ -14,7 +14,9 @@ export async function clientLoader() {
       throw new Error('No workspace selected');
     }
 
-    const projects = await fetchProjectsByWorkspaceId(currentWorkspace.workspace_id);
+    const projects = await fetchProjectsByWorkspaceId(
+      currentWorkspace.workspace_id
+    );
     const first = projects[0];
     if (!first) throw new Error('No projects found');
 
@@ -26,12 +28,11 @@ export async function clientLoader() {
     };
   } catch (err) {
     console.error('Editor loader error:', err);
-    return null;
+    return redirect('/login');
   }
 }
 
 export default function EditorPage() {
-
   return (
     <div className="flex flex-col h-screen">
       <EditorHeader />
