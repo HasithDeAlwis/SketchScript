@@ -1,22 +1,25 @@
-import { useEffect, useRef, RefObject } from 'react';
+import { useState, useEffect, useRef, RefObject } from 'react';
 import { Tree, TreeApi } from 'react-arborist';
 import { Cloud, EllipsisVertical } from 'lucide-react';
 import { Node } from './tree-node';
 import { FileTreeButtons } from './file-tree-buttons';
-
-export type FileData = {
-  name: string;
-};
+import { handleCreate } from '../util';
+import { useLoaderData } from 'react-router';
+import { Project } from '../../../models/project';
+import { FileTreeNode } from '../../../api/files';
 
 type FileTreeProps = {
-  data: FileData[];
-  treeRef: RefObject<TreeApi<FileData> | null>;
+  treeRef: RefObject<TreeApi<FileTreeNode> | null>;
   treeWidth: number;
   setTreeWidth: (width: number) => void;
 };
 
-export function FileTree({ data, treeRef, treeWidth, setTreeWidth }: FileTreeProps) {
+export function FileTree({ treeRef, treeWidth, setTreeWidth }: FileTreeProps) {
   const isResizing = useRef(false);
+  const { fileTree, project } = useLoaderData() as { fileTree: FileTreeNode[], project: Project };
+
+  const [data, setData] = useState<FileTreeNode[]>(fileTree);
+
 
   const handleMouseDown = () => {
     isResizing.current = true;
@@ -42,7 +45,7 @@ export function FileTree({ data, treeRef, treeWidth, setTreeWidth }: FileTreePro
   }, []);
 
   return (
-    <div className="flex flex-col justify-between h-screen pb-2 border-r-2 border-primary bg-muted/20">
+    <div className="flex flex-col justify-between h-full pb-2 border-r-2 border-primary bg-muted/20">
       {/* Main horizontal layout: resizable panel + handle */}
       <div className="flex flex-row h-full">
         {/* Resizable tree panel */}
@@ -58,8 +61,32 @@ export function FileTree({ data, treeRef, treeWidth, setTreeWidth }: FileTreePro
 
           {/* Tree view */}
           <div className="flex-1 overflow-auto">
-            <Tree<FileData> ref={treeRef} initialData={data} width={treeWidth}>
-              {Node}
+            <Tree<FileTreeNode>
+              ref={treeRef}
+              data={data}
+              width={treeWidth}
+              // onMove={(params) =>
+              //   handleMove(
+              //     params.dragIds,
+              //     params.dragNodes,
+              //     params.parentId,
+              //     params.index
+              //   )
+              // }
+              onCreate={async (params) => {
+                const treeNode = await handleCreate(
+                  params.parentId,
+                  params.type,
+                  project.project_id,
+                  setData
+                );
+                if (treeNode)
+                  return treeNode;
+                else
+                  return null;
+              }}
+            >
+              {(nodeProps) => <Node {...nodeProps} setData={setData} />}
             </Tree>
           </div>
         </div>

@@ -1,11 +1,11 @@
 import { Button } from '@shared/ui/button';
-import { FilePlus2, FolderPlus } from 'lucide-react';
+import { FilePlus2 } from 'lucide-react';
 import type { TreeApi } from 'react-arborist';
 import type { RefObject } from 'react';
-import type { FileData } from './file-tree'; // Or wherever you defined it
+import type { FileTreeNode } from './../../../api/files'; // Or wherever you defined it
 
 type FileTreeButtonsProps = {
-  treeRef: RefObject<TreeApi<FileData> | null>;
+  treeRef: RefObject<TreeApi<FileTreeNode> | null>;
 };
 
 export function FileTreeButtons({ treeRef }: FileTreeButtonsProps) {
@@ -16,19 +16,20 @@ export function FileTreeButtons({ treeRef }: FileTreeButtonsProps) {
       <Button
         className="w-full"
         onClick={() => {
+          console.log('create file');
           if (rootId) treeRef.current?.createLeaf();
         }}
       >
         <FilePlus2 />
       </Button>
-      <Button
+      {/* <Button
         className="w-full"
         onClick={() => {
           if (rootId) treeRef.current?.createInternal();
         }}
       >
         <FolderPlus />
-      </Button>
+      </Button> */}
     </div>
   );
 }

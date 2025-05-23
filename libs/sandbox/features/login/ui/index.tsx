@@ -7,6 +7,7 @@ export function LoginCard() {
   return (
     <div className="relative flex flex-col items-center justify-center w-full min-h-screen overflow-hidden bg-background">
 
+
       <div className="absolute top-0 left-0 w-full h-full">
         <div className="absolute top-[15%] left-[10%] w-16 h-16 rounded-full bg-secondary opacity-20"></div>
         <div className="absolute top-[60%] right-[15%] w-24 h-24 rounded-full bg-accent opacity-20"></div>
