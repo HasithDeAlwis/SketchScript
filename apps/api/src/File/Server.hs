@@ -24,8 +24,8 @@ import Shared.Models.User (User)
 type Protected =
   "file"
     :> ( QueryParam "pid" Text :> Get '[JSON] [File]
-           :<|> ReqBody '[JSON] CreateFileReq :> Post '[JSON] FileResponse
-           :<|> ReqBody '[JSON] UpdateFileReq :> Put '[JSON] FileResponse
+           :<|> ReqBody '[JSON] CreateFileReq :> Post '[JSON] File
+           :<|> ReqBody '[JSON] UpdateFileReq :> Put '[JSON] File
            :<|> Capture "fileId" UUID :> Delete '[JSON] NoContent
        )
 
