@@ -5,26 +5,13 @@ import { MyEditor } from './editor'
 
 export function CodeEditor() {
   const treeRef = useRef(null)
-
-  const data = [
-    { id: "1", name: "public", children: [{ id: "c1-1", name: "index.html" }] },
-    {
-      id: "2", name: "src", children: [
-        { id: "c2-1", name: "App.js" },
-        { id: "c2-2", name: "index.js" },
-        { id: "c2-3", name: "styles.css" }
-      ]
-    },
-    { id: "3", name: "package.json" },
-    { id: "4", name: "README.md" }
-  ]
   const [treeWidth, setTreeWidth] = useState(210)
-  const [fileData, setFileData] = useState(data)
+
 
 
   return (
     <div className="flex h-screen p-2 overflow-hidden max-w-screen">
-      <FileTree data={fileData} treeRef={treeRef} treeWidth={treeWidth} setTreeWidth={setTreeWidth} />
+      <FileTree treeRef={treeRef} treeWidth={treeWidth} setTreeWidth={setTreeWidth} />
       <MyEditor />
       <Canvas htmlOutput={`<div className='text-lg'><h1>Hello world!</h1><p>This is your rendered DSL.</p></div>`} />
     </div>

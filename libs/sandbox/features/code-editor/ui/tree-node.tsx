@@ -1,3 +1,6 @@
+import { FileTreeNode, updateFileMetadata, deleteFileMetadata } from '../../../api/files';
+import { File } from '../../../models/file';
+
 import {
   PencilRuler,
   FolderClosed,
@@ -6,21 +9,14 @@ import {
   Trash,
   Code,
 } from "lucide-react";
-import type { TreeApi, NodeApi } from "react-arborist";
+import type { NodeApi, NodeRendererProps } from "react-arborist";
 
-type FileData = {
-  name: string;
+type CustomNodeProps = NodeRendererProps<FileTreeNode> & {
+  setData: React.Dispatch<React.SetStateAction<FileTreeNode[]>>;
 };
 
-type NodeProps = {
-  node: NodeApi<FileData>;
-  style: React.CSSProperties;
-  dragHandle?: React.Ref<HTMLDivElement>;
-  tree: TreeApi<FileData>;
-};
-
-export const Node: React.FC<NodeProps> = ({ node, style, dragHandle, tree }) => {
-  function getNodeIcon(node: NodeApi<FileData>) {
+export const Node: React.FC<CustomNodeProps> = ({ node, style, tree, setData }) => {
+  function getNodeIcon(node: NodeApi<FileTreeNode>) {
     if (node.isLeaf && node.data.name.endsWith(".sks")) {
       return <PencilRuler className="w-4 h-4 text-primary" />;
     } else if (node.isLeaf) {
@@ -34,7 +30,6 @@ export const Node: React.FC<NodeProps> = ({ node, style, dragHandle, tree }) => 
 
   return (
     <div
-      ref={dragHandle}
       style={{ ...style, width: "90%" }}
       className="flex items-center justify-between transition-colors cursor-pointer select-none group hover:bg-stone-200"
       onClick={() => node.isInternal && node.toggle()}
@@ -48,15 +43,34 @@ export const Node: React.FC<NodeProps> = ({ node, style, dragHandle, tree }) => 
               defaultValue={node.data.name}
               className="w-full text-sm font-medium border-none outline-none text-primary"
               onFocus={(e) => e.currentTarget.select()}
-              onBlur={() => node.reset()}
-              onKeyDown={(e) => {
+              onKeyDown={async (e) => {
                 if (e.key === "Escape") {
                   node.reset();
                   e.preventDefault();
                   e.stopPropagation();
                 }
                 if (e.key === "Enter") {
-                  node.submit(e.currentTarget.value);
+                  const newName = e.currentTarget.value
+                  const { id: _id, parent: _parent, children: _children, name: _name, ...rest } = node.data;
+                  const toUpdate: File = {
+                    ...rest,
+                    file_name: newName,
+                  };
+                  try {
+                    const res = await updateFileMetadata(toUpdate)
+                    setData((prev) => {
+                      const newData = [...prev];
+                      const index = newData.findIndex((item) => item.id === node.id);
+                      if (index !== -1) {
+                        newData[index] = res;
+                      }
+                      return newData;
+                    })
+                    node.submit(e.currentTarget.value);
+                  }
+                  catch (error) {
+                    console.error("Failed to update file metadata", error);
+                  }
                 }
               }}
               autoFocus
@@ -69,7 +83,7 @@ export const Node: React.FC<NodeProps> = ({ node, style, dragHandle, tree }) => 
         </div>
 
         {!node.isEditing && (
-          <div className="flex items-center w-full gap-1 transition-opacity opacity-0 group-hover:opacity-100">
+          <div className="flex items-center gap-1 transition-opacity opacity-0 group-hover:opacity-100">
             <div className="flex items-center gap-1 ml-auto">
               <button
                 onClick={(e) => {
@@ -82,9 +96,22 @@ export const Node: React.FC<NodeProps> = ({ node, style, dragHandle, tree }) => 
                 <Pencil className="w-4 h-4 text-foreground" />
               </button>
               <button
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.stopPropagation();
-                  tree.delete(node.id);
+                  try {
+                    await deleteFileMetadata(node.data.id);
+                    setData((prev) => {
+                      const newData = [...prev];
+                      const index = newData.findIndex((item) => item.id === node.id);
+                      if (index !== -1) {
+                        newData.splice(index, 1);
+                      }
+                      return newData;
+                    }
+                    )
+                  } catch (error) {
+                    console.error("Failed to delete file metadata", error);
+                  }
                 }}
                 title="Delete"
                 className="transition rounded cursor-pointer hover:bg-primary/10"
