@@ -11,15 +11,11 @@ import File.DB
 import File.Types
 import Shared.Models.File
 
-createFileHandler :: Pool Connection -> CreateFileReq -> IO FileResponse
-createFileHandler pool (CreateFileReq pid parent name) = do
-  file <- createFile pool pid parent name
-  pure $ toFileResponse file
+createFileHandler :: Pool Connection -> CreateFileReq -> IO File
+createFileHandler pool (CreateFileReq pid parent name fileType) = createFile pool pid parent name fileType
 
-updateFileHandler :: Pool Connection -> UpdateFileReq -> IO FileResponse
-updateFileHandler pool (UpdateFileReq fileId pid parent name) = do
-  file <- updateFile pool fileId pid parent name
-  pure $ toFileResponse file
+updateFileHandler :: Pool Connection -> UpdateFileReq -> IO File
+updateFileHandler pool (UpdateFileReq fileId pid parent name) = updateFile pool fileId pid parent name
 
 deleteFileHandler :: Pool Connection -> UUID -> IO ()
 deleteFileHandler = deleteFile

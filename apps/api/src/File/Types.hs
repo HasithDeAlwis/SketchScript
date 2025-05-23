@@ -8,9 +8,10 @@ import Data.UUID (UUID)
 import GHC.Generics (Generic)
 
 data CreateFileReq = CreateFileReq
-  { createReqProjectID :: UUID,
+  { createReqProjectId :: UUID,
     createReqParentId :: Maybe UUID,
-    createReqName :: Maybe Text
+    createReqName :: Maybe Text,
+    createReqFileType :: Text
   }
   deriving (Generic)
 
