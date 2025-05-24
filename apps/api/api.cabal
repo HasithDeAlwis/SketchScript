@@ -90,6 +90,7 @@ library
       , File.Handler
       , File.Server
       , File.Types
+      , S3.Server
 
 
     -- LANGUAGE extensions used by modules in this package.
@@ -102,6 +103,7 @@ library
       , attoparsec
       , blaze-markup
       , blaze-html
+      , blaze-builder
       , bytestring
       , containers
       , directory
@@ -134,6 +136,7 @@ library
       , postgresql-simple
       , uuid
       , wai-cors
+      , s3-signer
 
     -- Directories containing source files.
     hs-source-dirs:   src

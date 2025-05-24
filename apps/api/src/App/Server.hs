@@ -13,6 +13,7 @@ import Database.PostgreSQL.Simple qualified as DBPS
 import File.Server qualified as File
 import Network.Wai.Middleware.Cors
 import Project.Server qualified as Project
+import S3.Server qualified as S3
 import Servant
 import Servant.Auth.Server
 import System.Environment (getEnv)
@@ -21,7 +22,7 @@ import User.Server qualified as User
 
 type DBConnectionString = ByteString
 
-type API auths = User.API :<|> Auth.API auths :<|> Project.API auths :<|> File.API auths
+type API auths = User.API :<|> Auth.API auths :<|> Project.API auths :<|> File.API auths :<|> S3.API auths
 
 initConnectionPool :: DBConnectionString -> IO (Pool DBPS.Connection)
 initConnectionPool connStr =
@@ -34,7 +35,7 @@ initConnectionPool connStr =
 
 coreServer :: Pool DBPS.Connection -> CookieSettings -> JWTSettings -> Server (API auths)
 coreServer cons cs jwts =
-  User.server :<|> Auth.server cons cs jwts :<|> Project.server cons :<|> File.server cons
+  User.server :<|> Auth.server cons cs jwts :<|> Project.server cons :<|> File.server cons :<|> S3.server cons
 
 corsPolicy :: CorsResourcePolicy
 corsPolicy =
@@ -47,13 +48,13 @@ corsPolicy =
 app :: IO Application
 app = do
   _ <- loadFile defaultConfig
-  env <- getEnv "ENV"
+  envType <- getEnv "ENV"
   connStr <- getEnv "DATABASE_URL"
   pool <- initConnectionPool $ pack connStr
   jwtKey <- generateKey
 
   let cookieCfg =
-        if env == "PROD"
+        if envType == "PROD"
           then
             defaultCookieSettings
               { cookieIsSecure = Secure,
