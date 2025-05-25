@@ -7,6 +7,8 @@ import { Dispatch } from 'react';
 // import { FileData } from './ui/file-tree';
 // import { create } from 'domain';
 
+// TODO: Refactor out API calls
+
 export function toFile(node: FileTreeNode): File {
     const {
         id,
@@ -32,17 +34,15 @@ export function toFile(node: FileTreeNode): File {
 // }
 
 
-export async function handleRename(node: FileTreeNode, name: string) {
-    const updated = {
-        ...toFile(node),
-        file_name: name,
-        file_updated_at: new Date().toISOString(),
-    };
+// export async function handleRename(node: FileTreeNode, name: string) {
+//     const updated = {
+//         ...toFile(node),
+//         file_name: name,
+//         file_updated_at: new Date().toISOString(),
+//     };
 
-    await axiosInstance.put(`/file/${node.file_id}`, updated);
-}
-
-
+//     await axiosInstance.put(`/file/${node.file_id}`, updated);
+// }
 
 export async function handleCreate(parentId: string | null, type: string, projectId: string, setData: Dispatch<React.SetStateAction<FileTreeNode[]>>) {
     const newFileReqBody = {
@@ -54,6 +54,7 @@ export async function handleCreate(parentId: string | null, type: string, projec
 
     try {
         const res = await axiosInstance.post(`/file`, newFileReqBody);
+
         if (res.status !== 200) {
             throw new Error('Failed to create file');
         }
@@ -66,18 +67,18 @@ export async function handleCreate(parentId: string | null, type: string, projec
             children: type === 'leaf' ? undefined : [],
         } as FileTreeNode
 
+      setData((prev) => {
+          return [...prev, newFile]
+      });
 
-        setData((prev) => {
-            return [...prev, newFile]
-        });
-        return newFile
+      return newFile
     } catch (err) {
         console.error('Error creating file:', err);
     }
 }
 
-export async function handleDelete(nodes: FileTreeNode[]) {
-    for (const node of nodes) {
-        await axiosInstance.delete(`/file/${node.file_id}`);
-    }
-}
+// export async function handleDelete(nodes: FileTreeNode[]) {
+//     for (const node of nodes) {
+//         await axiosInstance.delete(`/file/${node.file_id}`);
+//     }
+// }

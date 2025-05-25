@@ -1,5 +1,9 @@
 import { axiosInstance } from '../shared/axiosInstance';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { useDebouncedMutation } from '../shared/useDebounceHook';
+import axios from 'axios'
 import { File } from '../models/file';
+import { FileMap } from '../features/code-editor/types';
 
 export interface FileTreeNode extends File {
   id: string;
@@ -95,4 +99,36 @@ function buildFileTree(files: File[]): FileTreeNode[] {
   //   }
   // }
   // console.log('File tree:', root);
+}
+
+export async function downloadFile(file: File) {
+  const presignedGetUrlResp = await axiosInstance.get(`/s3/download/${file.file_id}`)
+  const fileResp = await axiosInstance.get(presignedGetUrlResp.data)
+
+  if (!(fileResp.status === 200)) {
+    throw new Error("Failed to download file")
+  }
+  return fileResp.data
+}
+
+export async function uploadFile(newValue: string, fileId: string, setAllValues: React.Dispatch<React.SetStateAction<FileMap>>) {
+  const { data: presignedUrl } = await axiosInstance.post(`/s3/upload`, { fileId })
+  setAllValues(prev => ({
+    ...prev,
+    [fileId]: newValue
+  }));
+  await uploadToPresignedUrl(presignedUrl, newValue);
+}
+
+async function uploadToPresignedUrl(presignedUrl: string, newValue: string) {
+  const resp = await axios.put(presignedUrl, newValue, {
+    headers: {
+      'Content-Type': 'text/plain',
+      'x-amz-content-sha256': 'UNSIGNED-PAYLOAD',
+    },
+  });
+
+  if (!(resp.status === 200 || resp.status === 204)) {
+    throw new Error("Failed to upload new file data");
+  };
 }

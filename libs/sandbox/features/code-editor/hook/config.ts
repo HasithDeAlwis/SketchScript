@@ -19,9 +19,10 @@ export const options = {
 }
 
 export function handleEditorDidMount(
-  monaco: Monaco
+  monaco: Monaco,
 ) {
-  const languageId = 'ui-script'
+
+  const languageId = 'sketch-script'
 
   monaco.editor.defineTheme('sketch-script-light', {
     base: 'vs',
