@@ -1,14 +1,14 @@
 module S3.Handler where
 
-import Network.AWS (Credentials (Discover), Env, Region (NorthVirginia), newEnv, runAWS, runResourceT)
 import Data.Text
+import Network.AWS (Credentials (Discover), Env, Region (NorthVirginia), newEnv, runAWS, runResourceT)
 
 generatePresignedPutUrl :: Env -> Text -> Text -> IO Text
 generatePresignedPutUrl env bucket key = do
   now <- getCurrentTime
   let expiry = addUTCTime (60 * 15) now
   runResourceT . runAWS env $ do
-    url <- presignURL expiry $ putObject (BucketName bucket) (ObjectKey key) ""
+    url <- presignURL expiry $ putObject (BucketName bucket) (ObjectKey key) " "
     return $ toText url
 
 generatePresignedGetUrl :: Env -> Text -> Text -> IO Text
