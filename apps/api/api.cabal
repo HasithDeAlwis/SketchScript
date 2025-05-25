@@ -99,12 +99,18 @@ library
     -- Other library packages from which modules are imported.
     build-depends:
       base ^>=4.18.3.0
+      , amazonka              >=2.0 && <2.1
+      , amazonka-s3
+      , lens
       , aeson
       , attoparsec
       , blaze-markup
       , blaze-html
       , blaze-builder
       , bytestring
+      , generic-lens
+      , conduit-extra
+      , conduit
       , containers
       , directory
       , http-media
@@ -136,7 +142,6 @@ library
       , postgresql-simple
       , uuid
       , wai-cors
-      , s3-signer
 
     -- Directories containing source files.
     hs-source-dirs:   src
