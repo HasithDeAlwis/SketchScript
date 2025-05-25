@@ -3,6 +3,9 @@ import { RootState } from '../../../stores/index';
 import { options, handleEditorDidMount } from '../hook/config';
 import { useSelector } from 'react-redux';
 import { Skeleton } from '@shared/ui/skeleton';
+import { uploadFile } from '../../../api/files'
+import { useDebouncedMutation } from '../../../shared/useDebounceHook';
+import { FileMap } from '../types';
 
 function EditorLoadingFallback() {
   return (
@@ -12,11 +15,12 @@ function EditorLoadingFallback() {
   );
 }
 
-export function MyEditor() {
+export function MyEditor({ allFiles, currentNode, setAllFiles }: { allFiles: FileMap, currentNode: string, setAllFiles: React.Dispatch<React.SetStateAction<FileMap>> }) {
   const theme = useSelector((state: RootState) => state.theme);
-
   const monacoTheme =
     theme === 'light' ? 'sketch-script-light' : 'sketch-script-dark';
+
+  const debouncedUpload = useDebouncedMutation(uploadFile, 500);
 
   return (
     <div className="w-full h-screen">
@@ -25,10 +29,13 @@ export function MyEditor() {
         options={options}
         height="100%"
         width="100%"
-        defaultLanguage="ui-script"
-        defaultValue=""
+        defaultLanguage="sketch-script"
         theme={monacoTheme}
-        beforeMount={handleEditorDidMount}
+        beforeMount={(params) => handleEditorDidMount(params)}
+        value={allFiles[currentNode] || ''}
+        onChange={(value) => {
+          debouncedUpload(value || '', currentNode, setAllFiles)
+        }}
       />
     </div>
   );

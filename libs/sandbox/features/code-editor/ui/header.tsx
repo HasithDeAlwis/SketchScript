@@ -22,7 +22,6 @@ export function EditorHeader() {
     const [updateProject] = useUpdateProjectMutation();
 
     useEffect(() => {
-
         if (projectName !== project.project_name) {
             const timeout = setTimeout(() => {
                 updateProject({
@@ -34,6 +33,7 @@ export function EditorHeader() {
             return () => clearTimeout(timeout);
         }
     }, [projectName]);
+
     return (
         <header className="flex items-center justify-between h-12 px-4 border-b border-muted bg-background">
             <div className="flex items-center space-x-4">

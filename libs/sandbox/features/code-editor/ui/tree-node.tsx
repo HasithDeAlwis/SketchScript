@@ -13,9 +13,10 @@ import type { NodeApi, NodeRendererProps } from "react-arborist";
 
 type CustomNodeProps = NodeRendererProps<FileTreeNode> & {
   setData: React.Dispatch<React.SetStateAction<FileTreeNode[]>>;
+  setCurrentFile: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export const Node: React.FC<CustomNodeProps> = ({ node, style, tree, setData }) => {
+export const Node: React.FC<CustomNodeProps> = ({ node, style, tree, setData, setCurrentFile }) => {
   function getNodeIcon(node: NodeApi<FileTreeNode>) {
     if (node.isLeaf && node.data.name.endsWith(".sks")) {
       return <PencilRuler className="w-4 h-4 text-primary" />;
@@ -32,7 +33,12 @@ export const Node: React.FC<CustomNodeProps> = ({ node, style, tree, setData }) 
     <div
       style={{ ...style, width: "90%" }}
       className="flex items-center justify-between transition-colors cursor-pointer select-none group hover:bg-stone-200"
-      onClick={() => node.isInternal && node.toggle()}
+      onClick={() => {
+        if (node.isLeaf) {
+          setCurrentFile(node.id);
+        }
+        return node.isInternal && node.toggle()
+      }}
     >
       <div className="flex items-center justify-between flex-1 max-w-full gap-2">
         <div className="flex items-center flex-1 gap-2">
@@ -66,7 +72,7 @@ export const Node: React.FC<CustomNodeProps> = ({ node, style, tree, setData }) 
                       }
                       return newData;
                     })
-                    node.submit(e.currentTarget.value);
+
                   }
                   catch (error) {
                     console.error("Failed to update file metadata", error);

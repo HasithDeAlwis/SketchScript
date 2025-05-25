@@ -16,7 +16,6 @@ export function FileTreeButtons({ treeRef }: FileTreeButtonsProps) {
       <Button
         className="w-full"
         onClick={() => {
-          console.log('create file');
           if (rootId) treeRef.current?.createLeaf();
         }}
       >

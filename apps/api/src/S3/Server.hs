@@ -63,7 +63,7 @@ getPresignedGetURL reg b k = do
   env <- newEnv discover <&> set #logger lgr . set #region reg
   ts <- getCurrentTime
 
-  runResourceT $ presignURL env ts 120 (newPutObject b k (toBody ("" :: ByteString)))
+  runResourceT $ presignURL env ts 120 (newGetObject b k)
 
 getPresignedDeleteURL :: Region -> BucketName -> ObjectKey -> IO ByteString
 getPresignedDeleteURL reg b k = do

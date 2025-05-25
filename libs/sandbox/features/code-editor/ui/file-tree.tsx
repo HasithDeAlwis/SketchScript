@@ -12,14 +12,14 @@ type FileTreeProps = {
   treeRef: RefObject<TreeApi<FileTreeNode> | null>;
   treeWidth: number;
   setTreeWidth: (width: number) => void;
+  setCurrentFile: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export function FileTree({ treeRef, treeWidth, setTreeWidth }: FileTreeProps) {
+export function FileTree({ treeRef, treeWidth, setTreeWidth, setCurrentFile }: FileTreeProps) {
   const isResizing = useRef(false);
   const { fileTree, project } = useLoaderData() as { fileTree: FileTreeNode[], project: Project };
 
   const [data, setData] = useState<FileTreeNode[]>(fileTree);
-
 
   const handleMouseDown = () => {
     isResizing.current = true;
@@ -86,7 +86,7 @@ export function FileTree({ treeRef, treeWidth, setTreeWidth }: FileTreeProps) {
                   return null;
               }}
             >
-              {(nodeProps) => <Node {...nodeProps} setData={setData} />}
+              {(nodeProps) => <Node {...nodeProps} setData={setData} setCurrentFile={setCurrentFile} />}
             </Tree>
           </div>
         </div>
