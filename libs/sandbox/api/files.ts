@@ -1,6 +1,4 @@
 import { axiosInstance } from '../shared/axiosInstance';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { useDebouncedMutation } from '../shared/useDebounceHook';
 import axios from 'axios'
 import { File } from '../models/file';
 import { FileMap } from '../features/code-editor/types';
@@ -103,7 +101,7 @@ function buildFileTree(files: File[]): FileTreeNode[] {
 
 export async function downloadFile(file: File) {
   const presignedGetUrlResp = await axiosInstance.get(`/s3/download/${file.file_id}`)
-  const fileResp = await axiosInstance.get(presignedGetUrlResp.data)
+  const fileResp = await axios.get(presignedGetUrlResp.data)
 
   if (!(fileResp.status === 200)) {
     throw new Error("Failed to download file")
@@ -112,12 +110,23 @@ export async function downloadFile(file: File) {
 }
 
 export async function uploadFile(newValue: string, fileId: string, setAllValues: React.Dispatch<React.SetStateAction<FileMap>>) {
-  const { data: presignedUrl } = await axiosInstance.post(`/s3/upload`, { fileId })
-  setAllValues(prev => ({
-    ...prev,
-    [fileId]: newValue
-  }));
-  await uploadToPresignedUrl(presignedUrl, newValue);
+  try {
+    setAllValues(prev => ({
+      ...prev,
+      [fileId]: newValue
+    }));
+
+    const resp = await axiosInstance.post(`/s3/upload`, { fileId })
+
+    if (resp.status !== 200) {
+      throw new Error("Failed to generate presign url")
+    }
+    const presignedUrl = resp.data;
+    await uploadToPresignedUrl(presignedUrl, newValue);
+
+  } catch (err) {
+    console.error("Error updating the file on s3", err)
+  }
 }
 
 async function uploadToPresignedUrl(presignedUrl: string, newValue: string) {

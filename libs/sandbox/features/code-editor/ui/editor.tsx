@@ -32,9 +32,9 @@ export function MyEditor({ allFiles, currentNode, setAllFiles }: { allFiles: Fil
         defaultLanguage="sketch-script"
         theme={monacoTheme}
         beforeMount={(params) => handleEditorDidMount(params)}
-        value={allFiles[currentNode] || ''}
+        value={currentNode in allFiles ? allFiles[currentNode] : ''}
         onChange={(value) => {
-          debouncedUpload(value || '', currentNode, setAllFiles)
+          debouncedUpload(value || '', currentNode || '', setAllFiles)
         }}
       />
     </div>
