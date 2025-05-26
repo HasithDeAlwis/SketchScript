@@ -8,12 +8,13 @@ import { FileTreeNode } from '../../../api/files';
 
 
 export function CodeEditor() {
-  const { fileTree } = useLoaderData() as { fileTree: FileTreeNode[] }
+  const { fileTree, fileMap } = useLoaderData() as { fileTree: FileTreeNode[], fileMap: FileMap };
 
   const treeRef = useRef(null)
   const [treeWidth, setTreeWidth] = useState(210)
-  const [allFiles, setAllFiles] = useState<FileMap>({})
-  const [currentFile, setCurrentFile] = useState<string>(fileTree[0].id)
+  const [allFiles, setAllFiles] = useState<FileMap>(fileMap)
+  const [currentFile, setCurrentFile] = useState<string>(fileTree[0]?.id || '');
+
 
   return (
     <div className="flex h-screen p-2 overflow-hidden max-w-screen">
