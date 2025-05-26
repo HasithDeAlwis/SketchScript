@@ -5,13 +5,12 @@
 module Project.Server (API, server) where
 
 import Control.Monad.IO.Class (liftIO)
-import Data.Aeson (FromJSON)
+import Data.ByteString.Lazy qualified as BL
 import Data.Pool (Pool)
 import Data.String.Conv (toS)
 import Data.Text (Text)
-import Data.UUID as UUID (UUID, fromText)
+import Data.Text.Encoding qualified as TE
 import Database.PostgreSQL.Simple (Connection)
-import GHC.Generics (Generic)
 import Project.Handler (ProjectNameUpdate (..), getProjectsByWorkspaceIO, updateProjectNameIO)
 import Servant
 import Servant.Auth.Server
@@ -30,7 +29,7 @@ type Protected =
 type API auths = Auth auths User :> Protected
 
 server :: Pool Connection -> Server (API auths)
-server pool (Authenticated user) = getProjectsHandler :<|> updateProjectNameHandler
+server pool (Authenticated _user) = getProjectsHandler :<|> updateProjectNameHandler
   where
     -- GET /project?wid=...
     getProjectsHandler :: Maybe Text -> Handler [Project]
@@ -47,6 +46,6 @@ server pool (Authenticated user) = getProjectsHandler :<|> updateProjectNameHand
     updateProjectNameHandler pid (ProjectNameUpdate newName) = do
       result <- liftIO $ updateProjectNameIO pool pid newName
       case result of
-        Left err -> throwError err404 {errBody = "Project not found"}
+        Left err -> throwError err404 {errBody = BL.fromStrict $ TE.encodeUtf8 err}
         Right updated -> pure updated
 server _ _ = throwAll err401 {errBody = "Unauthorized"}

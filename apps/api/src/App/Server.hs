@@ -26,7 +26,7 @@ type API auths = User.API :<|> Auth.API auths :<|> Project.API auths :<|> File.A
 
 initConnectionPool :: DBConnectionString -> IO (Pool DBPS.Connection)
 initConnectionPool connStr =
-  createPool
+  createPool -- TOOD: Use newer newPool function over createPool
     (DBPS.connectPostgreSQL connStr)
     DBPS.close
     2 -- stripes
@@ -37,10 +37,10 @@ coreServer :: Pool DBPS.Connection -> CookieSettings -> JWTSettings -> Server (A
 coreServer cons cs jwts =
   User.server :<|> Auth.server cons cs jwts :<|> Project.server cons :<|> File.server cons :<|> S3.server cons
 
-corsPolicy :: CorsResourcePolicy
-corsPolicy =
+corsPolicy :: String -> CorsResourcePolicy
+corsPolicy origin =
   simpleCorsResourcePolicy
-    { corsOrigins = Just (["http://localhost:4200"], True),
+    { corsOrigins = Just ([pack origin], True),
       corsRequestHeaders = ["Authorization", "Content-Type"],
       corsMethods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     }
@@ -50,6 +50,8 @@ app = do
   _ <- loadFile defaultConfig
   envType <- getEnv "ENV"
   connStr <- getEnv "DATABASE_URL"
+  corsAllowedOrigin <- getEnv "CORS_ALLOWED_ORIGIN"
+  let corsPolicy' = corsPolicy corsAllowedOrigin
   pool <- initConnectionPool $ pack connStr
   jwtKey <- generateKey
 
@@ -65,4 +67,4 @@ app = do
       jwtSettings = defaultJWTSettings jwtKey
       context = cookieCfg :. jwtSettings :. EmptyContext
       cookieAPI = Proxy :: Proxy (API '[Cookie])
-  return $ cors (const $ Just corsPolicy) $ serveWithContext cookieAPI context (coreServer pool cookieCfg jwtSettings)
+  return $ cors (const $ Just corsPolicy') $ serveWithContext cookieAPI context (coreServer pool cookieCfg jwtSettings)

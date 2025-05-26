@@ -12,7 +12,7 @@ import GHC.Generics (Generic)
 import Project.DB (findProjectByID, findProjectsByWorkspaceID, updateProjectName)
 import Shared.Models.Project (Project)
 
-data ProjectNameUpdate = ProjectNameUpdate
+newtype ProjectNameUpdate = ProjectNameUpdate
   { name :: Text
   }
   deriving (Show, Generic)

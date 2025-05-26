@@ -12,7 +12,6 @@ import Auth.Handler
   )
 import Data.Pool
 import Data.Text (Text)
-import Data.UUID (UUID)
 import Database.PostgreSQL.Simple qualified as DBPS
 import Servant
 import Servant.Auth.Server

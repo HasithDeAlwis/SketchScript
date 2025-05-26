@@ -4,7 +4,6 @@ module Project.DB where
 
 import Data.Pool (Pool, withResource)
 import Data.Text (Text)
-import Data.Time (UTCTime)
 import Data.UUID (UUID)
 import Database.PostgreSQL.Simple (Connection, Only (..), execute, query)
 import Shared.Models.Project (Project (..))
