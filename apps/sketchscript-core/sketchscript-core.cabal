@@ -1,0 +1,39 @@
+cabal-version:      3.0
+name:               sketchscript-core
+version:            0.1.0.0
+-- synopsis:
+-- description:
+homepage:           https://docs.sketchscript.dev
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             HasithDeAlwis
+maintainer:         hasithde24@gmail.com
+-- copyright:
+category:           Language
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+-- extra-source-files:
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings
+    exposed-modules:  MyLib
+    -- other-modules:
+    -- other-extensions:
+    build-depends:    base ^>=4.18.3.0
+    hs-source-dirs:   src
+    default-language: Haskell2010
+
+test-suite sketchscript-core-test
+    import:           warnings
+    default-language: Haskell2010
+    -- other-modules:
+    -- other-extensions:
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          Main.hs
+    build-depends:
+        base ^>=4.18.3.0,
+        sketchscript-core
