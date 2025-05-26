@@ -3,7 +3,6 @@
 
 module User.Api where
 
-import GHC.Generics (Generic)
 import Servant (Get, JSON, (:<|>), (:>))
 import Shared.Models.User (User)
 

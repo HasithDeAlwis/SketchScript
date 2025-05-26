@@ -105,17 +105,18 @@ logoutHandler ::
 logoutHandler cs (Authenticated _) = pure $ clearSession cs NoContent
 logoutHandler _ _ = throwError err401 {errBody = "Unauthorized"}
 
-data MeHandlerResponse = MeHandlerResponse {
-  user :: User,
-  workspaces :: [Workspace]
-  } deriving (Show, Generic)
+data MeHandlerResponse = MeHandlerResponse
+  { user :: User,
+    workspaces :: [Workspace]
+  }
+  deriving (Show, Generic)
 
 instance ToJSON MeHandlerResponse
 
 meHandler :: Pool DBPS.Connection -> AuthResult User -> Handler MeHandlerResponse
-meHandler cons (Authenticated user) = do
-  workspaces <- liftIO $ getUserWorkspaces cons $ user_id user
-  return $ MeHandlerResponse user workspaces
+meHandler cons (Authenticated curUser) = do
+  userWorkspaces <- liftIO $ getUserWorkspaces cons $ user_id curUser
+  return $ MeHandlerResponse curUser userWorkspaces
 meHandler _ _ = throwError err401 {errBody = "User is not authorized"}
 
 callbackHandler ::
@@ -156,18 +157,18 @@ callbackHandler conn cs jwts mState mCode mCookieHeader = do
 
   possibleUser <- liftIO $ getUserByEmail conn userEmail
 
-  (user, workspaceID : rest) <- case possibleUser of
+  (curUser, _workspaceID : _rest) <- case possibleUser of
     [] -> do
-      user <- liftIO $ createUser conn userName userEmail
+      curUser <- liftIO $ createUser conn userName userEmail
       (workspace, role, _project) <- liftIO $ createWorkspace conn (Just "First Project") (Just "personal")
-      () <- liftIO $ joinWorkspace conn (user_id user) (workspace_id workspace) (role_id role)
-      pure (user, [workspace_id workspace])
-    [user] -> do
-      workspace <- liftIO $ getUserWorkspaces conn (user_id user)
-      pure (user, map workspace_id workspace)
+      () <- liftIO $ joinWorkspace conn (user_id curUser) (workspace_id workspace) (role_id role)
+      pure (curUser, [workspace_id workspace])
+    [curUser] -> do
+      workspace <- liftIO $ getUserWorkspaces conn (user_id curUser)
+      pure (curUser, map workspace_id workspace)
     _ -> throwError err403 {errBody = "Duplicate emails found"}
 
-  mApplyCookies <- liftIO $ acceptLogin cs jwts user
+  mApplyCookies <- liftIO $ acceptLogin cs jwts curUser
   applyCookies <- hoistMaybe err500 {errBody = "Could not create JWT"} mApplyCookies
   let responseWithCookies = applyCookies NoContent
       allHeaders = getHeaders responseWithCookies
