@@ -23,6 +23,7 @@ library
   other-modules:
     Parser.Common
     Parser.Element
+    Parser.Script
     Parser.Style
     Parser.Widget
     SketchScriptTypes
