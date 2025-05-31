@@ -1,0 +1,21 @@
+{
+    "name": "runtime",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/sketchscript-runtime/src",
+    "targets": {
+        "dev": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "cabal run sketchscript-runtime",
+                "forwardAllArgs": true
+            }
+        },
+        "build": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "cabal build sketchscript-runtime",
+                "forwardAllArgs": true
+            }
+        }
+    }
+}

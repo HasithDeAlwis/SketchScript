@@ -6,17 +6,16 @@
     "dev": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cabal run",
-        "cwd": "apps/api",
+        "command": "cabal run api",
         "forwardAllArgs": true
       }
     },
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cabal build",
-        "cwd": "apps/api"
+        "command": "cabal build api",
+        "forwardAllArgs": true
       }
-    },
+    }
   }
 }
