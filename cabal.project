@@ -1,0 +1,4 @@
+packages:
+  apps/sketchscript-core
+  apps/sketchscript-runtime
+  apps/api
