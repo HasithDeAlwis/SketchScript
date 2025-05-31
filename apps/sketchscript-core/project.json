@@ -1,0 +1,21 @@
+{
+    "name": "core",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/sketchscript-core/src",
+    "targets": {
+        "dev": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "cabal run sketchscript-core",
+                "forwardAllArgs": true
+            }
+        },
+        "build": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "cabal build sketchscript-core",
+                "forwardAllArgs": true
+            }
+        }
+    }
+}
