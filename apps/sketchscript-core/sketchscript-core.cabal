@@ -19,15 +19,17 @@ common warnings
 
 library
   import: warnings
-  exposed-modules: Main
+  exposed-modules:
+    Main
+    SketchScriptTypes
+    Types
+    Parser.Script
+
   other-modules:
     Parser.Common
     Parser.Element
-    Parser.Script
     Parser.Style
     Parser.Widget
-    SketchScriptTypes
-    Types
 
   -- other-modules:
   -- other-extensions:
