@@ -17,10 +17,9 @@ import Data.ByteString (ByteString)
 import Data.ByteString.Char8 ()
 import Data.Generics.Labels ()
 import Data.Pool (Pool)
-import Data.Text qualified as T (Text, pack, unpack)
+import Data.Text qualified as T (Text, pack)
 import Data.Text.Encoding qualified as TE
 import Data.Time
-import Data.UUID qualified as UUID
 import Database.PostgreSQL.Simple (Connection)
 import GHC.Generics (Generic)
 import Servant
@@ -33,7 +32,7 @@ import System.IO
 -- TODO: Add a file naming pattern
 
 -- === FileId ===
-newtype FileId = FileId {fileId :: UUID.UUID}
+newtype FileId = FileId {fileId :: T.Text}
   deriving (Eq, Show, Generic)
 
 instance FromJSON FileId
@@ -41,9 +40,7 @@ instance FromJSON FileId
 instance ToJSON FileId
 
 instance FromHttpApiData FileId where
-  parseUrlPiece t = case UUID.fromText t of
-    Just uuid -> Right (FileId uuid)
-    Nothing -> Left $ T.pack $ "Invalid UUID: " <> T.unpack t
+  parseUrlPiece = Right . FileId
 
 getPresignedPutURL ::
   Region ->
@@ -89,19 +86,19 @@ server _dbPool (Authenticated _user) =
     presignUpload :: FileId -> Handler T.Text
     presignUpload (FileId uuid) = liftIO $ do
       S3Credentials {..} <- getCredentials
-      url <- getPresignedPutURL Ohio (BucketName $ T.pack bucketName) (ObjectKey $ UUID.toText uuid)
+      url <- getPresignedPutURL Ohio (BucketName $ T.pack bucketName) (ObjectKey uuid)
       return $ TE.decodeUtf8 url
 
     presignDownload :: FileId -> Handler T.Text
     presignDownload (FileId uuid) = liftIO $ do
       S3Credentials {..} <- getCredentials
-      url <- getPresignedGetURL Ohio (BucketName $ T.pack bucketName) (ObjectKey $ UUID.toText uuid)
+      url <- getPresignedGetURL Ohio (BucketName $ T.pack bucketName) (ObjectKey uuid)
       return $ TE.decodeUtf8 url
 
     deleteFile :: FileId -> Handler T.Text
     deleteFile (FileId uuid) = liftIO $ do
       S3Credentials {..} <- getCredentials
-      url <- getPresignedDeleteURL Ohio (BucketName $ T.pack bucketName) (ObjectKey $ UUID.toText uuid)
+      url <- getPresignedDeleteURL Ohio (BucketName $ T.pack bucketName) (ObjectKey uuid)
       return $ TE.decodeUtf8 url
 server _ _ = throwAll err401 {errBody = "Unauthorized Users"}
 

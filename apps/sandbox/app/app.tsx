@@ -26,7 +26,7 @@ export async function clientLoader() {
     const fileMap: FileMap = {};
     for (const file of fileTree) {
       try {
-        const fileData = await downloadFile(file)
+        const fileData = await downloadFile(file.id)
         fileMap[file.id] = fileData;
       } catch (error) {
         console.error(`Failed to download file ${file.id}:`, error);
