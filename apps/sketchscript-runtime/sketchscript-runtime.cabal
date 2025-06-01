@@ -17,17 +17,63 @@ extra-doc-files: CHANGELOG.md
 common warnings
   ghc-options: -Wall
 
+executable sketchscript-runtime
+  -- Import common warning flags.
+  import: warnings
+  -- .hs or .lhs file containing the Main module.
+  main-is: Main.hs
+  -- Modules included in this executable, other than Main.
+  -- other-modules:
+  -- LANGUAGE extensions used by modules in this package.
+  -- other-extensions:
+  -- Other library packages from which modules are imported.
+  build-depends:
+    aeson,
+    amazonka >=2.0 && <2.1,
+    amazonka-core,
+    amazonka-s3,
+    base ^>=4.18.3.0,
+    base >=4.18.3.0 && <5,
+    bytestring,
+    conduit,
+    conduit-extra,
+    dotenv,
+    generic-lens,
+    lens,
+    scotty,
+    sketchscript-core,
+    sketchscript-runtime,
+    http-types,
+    transformers,
+    text,
+    wai-extra,
+
+  -- Directories containing source files.
+  hs-source-dirs: server
+  -- Base language which the package is written in.
+  default-language: Haskell2010
+
 library
   import: warnings
-  other-modules:
+  exposed-modules:
     CodeGenerators.Element
+
+  other-modules:
     CodeGenerators.Utils
     CodeGenerators.Widget
 
   -- other-extensions:
   build-depends:
+    aeson,
+    amazonka >=2.0 && <2.1,
+    amazonka-s3,
     base ^>=4.18.3.0,
+    bytestring,
+    lens,
+    scotty,
     sketchscript-core,
+    text,
+    wai-extra,
 
   hs-source-dirs: src
   default-language: Haskell2010
@@ -40,6 +86,4 @@ test-suite sketchscript-runtime-test
   type: exitcode-stdio-1.0
   hs-source-dirs: test
   main-is: Main.hs
-  build-depends:
-    base ^>=4.18.3.0,
-    sketchscript-runtime,
+  build-depends: base ^>=4.18.3.0

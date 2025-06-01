@@ -10,9 +10,8 @@ genElement (ElementWidget x) = genWidget x
 
 genContainer :: Container -> String
 genContainer (Container Box sizing styles children) =
-  "<div "
-    ++ genCSS sizing styles
-    ++ ">\n"
+  "<div class=\""
+    ++ genTailwindContainerClasses sizing styles children
+    ++ "\">\n"
     ++ concatMap genElement children
-    ++ "\n"
-    ++ "</div>"
+    ++ "\n</div>"
