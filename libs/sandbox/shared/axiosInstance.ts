@@ -10,3 +10,8 @@ export const axiosInstance = axios.create({
   timeout: 10000,
 });
 
+export const axiosInstanceCompiler = axios.create({
+  baseURL: isBrowser
+    ? import.meta.env.VITE_PUBLIC_API_BASE_COMPILER
+    : process.env.API_BASE_COMPILER,
+});

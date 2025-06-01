@@ -1,4 +1,5 @@
-import { axiosInstance } from '../shared/axiosInstance';
+import DOMPurify from 'isomorphic-dompurify'
+import { axiosInstanceCompiler, axiosInstance } from '../shared/axiosInstance';
 import axios from 'axios'
 import { File } from '../models/file';
 import { FileMap } from '../features/code-editor/types';
@@ -99,8 +100,8 @@ function buildFileTree(files: File[]): FileTreeNode[] {
   // console.log('File tree:', root);
 }
 
-export async function downloadFile(file: File) {
-  const presignedGetUrlResp = await axiosInstance.get(`/s3/download/${file.file_id}`)
+export async function downloadFile(file: string) {
+  const presignedGetUrlResp = await axiosInstance.get(`/s3/download/${file}`)
   const fileResp = await axios.get(presignedGetUrlResp.data)
 
   if (!(fileResp.status === 200)) {
@@ -122,11 +123,24 @@ export async function uploadFile(newValue: string, fileId: string, setAllValues:
       throw new Error("Failed to generate presign url")
     }
     const presignedUrl = resp.data;
-    await uploadToPresignedUrl(presignedUrl, newValue);
+    const presignUpload = await uploadToPresignedUrl(presignedUrl, newValue);
 
+    if (!(presignUpload.status === 200 || presignUpload.status === 204)) {
+      throw new Error("Failed to upload new file data");
+    }
+
+    const compileRes = await compiledAndUploadFile(fileId);
+    if (compileRes.status !== 200) {
+      throw new Error("Failed to compile file");
+    }
   } catch (err) {
     console.error("Error updating the file on s3", err)
   }
+}
+
+async function compiledAndUploadFile(fileId: string) {
+  const resp = await axiosInstanceCompiler.post(`/compile`, { key: fileId })
+  return resp
 }
 
 async function uploadToPresignedUrl(presignedUrl: string, newValue: string) {
@@ -136,8 +150,27 @@ async function uploadToPresignedUrl(presignedUrl: string, newValue: string) {
       'x-amz-content-sha256': 'UNSIGNED-PAYLOAD',
     },
   });
+  return resp;
 
-  if (!(resp.status === 200 || resp.status === 204)) {
-    throw new Error("Failed to upload new file data");
-  };
+}
+
+export function pollDownloadFile(fileId: string, setHtmlOutput: React.Dispatch<React.SetStateAction<string>>) {
+  let stopped = false;
+  async function poll() {
+    if (stopped) return;
+    try {
+      const data = await downloadFile(fileId + '.html');
+      console.log('Polling downloadFile data:', data);
+      setHtmlOutput(DOMPurify.sanitize(data));
+    } catch (err) {
+      // Optionally handle error
+      console.error('Polling downloadFile error:', err);
+    }
+    if (!stopped) {
+      setTimeout(poll, 3000);
+    }
+  }
+  poll();
+  // Return a stop function
+  return () => { stopped = true; };
 }
