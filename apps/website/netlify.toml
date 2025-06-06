@@ -1,0 +1,6 @@
+[build]
+command = "pnpm nx build website && cp apps/website/build/server/index.js apps/website/build/server/server.js"
+publish = "apps/website/build/client"
+
+[dev]
+command = "react-router dev"
