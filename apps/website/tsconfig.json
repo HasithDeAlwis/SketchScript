@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "allowJs": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "types": [
+      "vite/client",
+      "vitest",
+    ],
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "target": "ESNext",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2022"
+    ],
+    "module": "ESNext",
+    "paths": {
+      "@shared/*": [
+        "../../libs/shared/*"
+      ],
+      "@sandbox/*": [
+        "../../libs/sandbox/*"
+      ],
+      "@website/*": [
+        "../../libs/website/*"
+      ]
+    },
+  },
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    }
+  ],
+  "files": [],
+  "include": [],
+  "extends": "../../tsconfig.base.json"
+}

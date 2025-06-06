@@ -41,7 +41,8 @@
       },
       "exclude": [
         "**/docs/**/*",
-        "**/sandbox/**/*"
+        "**/sandbox/**/*",
+        "**/website/**/*"
       ]
     },
     {
@@ -65,7 +66,8 @@
       },
       "exclude": [
         "**/docs/**/*",
-        "**/sandbox/**/*"
+        "**/sandbox/**/*",
+        "**/website/**/*"
       ]
     },
     {

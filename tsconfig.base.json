@@ -12,11 +12,14 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "paths": {
+      "@sandbox/*": [
+        "./libs/sandbox/*"
+      ],
       "@shared/*": [
         "./libs/shared/*"
       ],
-      "@sandbox/*": [
-        "./libs/sandbox/*"
+      "@website/*": [
+        "./libs/website/*"
       ]
     },
     "declaration": false,
